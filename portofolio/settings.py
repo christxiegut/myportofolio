@@ -73,7 +73,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'portofolio.wsgi.application'
 
-# Database
+# Database 
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
 # Database configuration
