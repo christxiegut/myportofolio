@@ -3,59 +3,413 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Angelica - Portfolio</title>
+
+    <meta
+        name="description"
+        content="Portfolio of Angelica Christilia Talumewo, Information Systems student at Universitas Indonesia."
+    >
+
+    <title>Angelica Christilia Talumewo - Portfolio</title>
+
+    <link
+        rel="icon"
+        type="image/jpeg"
+        href="/static/img/logo_title.jpg"
+    >
+
+    <!-- Google Font used for headings and visual identity -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap"
+        rel="stylesheet"
+    >
+
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
+
 <body>
+
+    <!-- ======================================================
+         SITE HEADER
+         Sticky navigation allows users to move between
+         portfolio sections without JavaScript.
+         ====================================================== -->
     <header class="site-header">
-        <div class="container">
-            <a href="#profile" class="brand">Angelica</a>
-            <nav>
+        <div class="container header-inner">
+
+            <a href="#profile" class="brand">
+                Angelica
+            </a>
+
+            <nav class="main-nav" aria-label="Main navigation">
                 <a href="#profile">Profile</a>
+                <a href="#skills">Skills</a>
+                <a href="#experience">Experience</a>
             </nav>
+
         </div>
     </header>
 
+
     <main>
+
+        <!-- ==================================================
+             PROFILE / ABOUT ME
+             Existing section from Tutorial 01, refined while
+             preserving the original Grid-based layout.
+             ================================================== -->
         <section class="hero" id="profile">
+
             <div class="container hero-grid">
+
                 <div class="hero-identity">
-                    <p class="hero-kicker">Ilmu Komputer &middot; Universitas Indonesia</p>
-                    <h1>Angelica</h1>
+
+                    <p class="hero-kicker">
+                        Sistem Informasi &middot; Universitas Indonesia
+                    </p>
+
+                    <h1>
+                        Angelica Christilia Talumewo
+                    </h1>
+
                 </div>
+
+
                 <div class="hero-photo">
-                    <div class="photo-block"></div>
-                    <img class="avatar" src="/static/img/foto.png" alt="Photo of Angelica Christilia Talumewo">
+
+                    <!-- Decorative CSS layer behind the photo -->
+                    <div class="photo-block" aria-hidden="true"></div>
+
+                    <img
+                        class="avatar"
+                        src="/static/img/foto_Angel.png"
+                        alt="Photo of Angelica Christilia Talumewo"
+                    >
+
                 </div>
+
+
                 <div class="hero-details">
-                    <p class="bio">Mahasiswa jurusan Sistem Informasi Fakultas Ilmu Komputer Universitas Indonesia yang saat ini berada di semester 3.</p>
+
+                    <p class="bio">
+                        Mahasiswa jurusan Sistem Informasi Fakultas Ilmu Komputer
+                        Universitas Indonesia yang saat ini berada di semester 3.
+                    </p>
+
+
                     <dl class="meta-list">
+
                         <div class="meta-row">
                             <dt>NPM</dt>
                             <dd>2506536313</dd>
                         </div>
+
                         <div class="meta-row">
                             <dt>Program</dt>
                             <dd>S1 Sistem Informasi</dd>
                         </div>
+
                     </dl>
+
+
                     <div class="social-links">
-                        <a href="https://github.com/christxiegut" class="social-link">GitHub</a>
-                        <a href="https://linkedin.com/" class="social-link">LinkedIn</a>
-                        <a href="angelica.christilia@ui.ac.id" class="social-link">Email</a>
+
+                        <a
+                            href="https://github.com/christxiegut"
+                            class="social-link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            GitHub
+                        </a>
+
+                        <!--
+                            Replace this URL with your actual LinkedIn profile
+                            before submission.
+                        -->
+                        <a
+                            href="https://linkedin.com/in/angelicachristiliatalumewo"
+                            class="social-link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            LinkedIn
+                        </a>
+
+                        <a
+                            href="mailto:angelica.christilia@ui.ac.id"
+                            class="social-link"
+                        >
+                            Email
+                        </a>
+
                     </div>
+
                 </div>
+
             </div>
+
         </section>
+
+
+        <!-- ==================================================
+             SKILLS SECTION
+             CSS Grid automatically distributes the three
+             skill cards and adapts to smaller screen widths.
+             ================================================== -->
+        <section
+            class="content-section skills-section"
+            id="skills"
+            aria-labelledby="skills-title"
+        >
+
+            <div class="container">
+
+                <header class="section-heading">
+
+                    <p class="section-kicker">
+                        What I Learn
+                    </p>
+
+                    <h2 id="skills-title" class="section-title">
+                        Skills
+                    </h2>
+
+                    <p class="section-description">
+                        Beberapa kemampuan yang saya pelajari dan 
+                        kembangkan selama perkuliahan
+                        dan kegiatan organisasi.
+                    </p>
+
+                </header>
+
+
+                <div class="skills-grid">
+
+                    <article class="skill-card">
+
+                        <span class="card-index" aria-hidden="true">
+                            01
+                        </span>
+
+                        <h3>
+                            Object-Oriented Programming
+                        </h3>
+
+                        <p>
+                            Pemrograman menggunakan Java dengan pendekatan
+                            object-oriented.
+                        </p>
+
+                        <span class="skill-tag">
+                            Java &middot; OOP
+                        </span>
+
+                    </article>
+
+
+                    <article class="skill-card">
+
+                        <span class="card-index" aria-hidden="true">
+                            02
+                        </span>
+
+                        <h3>
+                            Microcontroller Programming
+                        </h3>
+
+                        <p>
+                            Pemrograman microcontroller menggunakan AVR
+                            Assembly untuk memahami proses komputasi dan
+                            kontrol perangkat pada level yang lebih rendah.
+                        </p>
+
+                        <span class="skill-tag">
+                            AVR Assembly
+                        </span>
+
+                    </article>
+
+
+                    <article class="skill-card">
+
+                        <span class="card-index" aria-hidden="true">
+                            03
+                        </span>
+
+                        <h3>
+                            Communication in Team
+                        </h3>
+
+                        <p>
+                            Kemampuan untuk berkomunikasi, berkoordinasi,
+                            dan menyampaikan informasi secara efektif
+                            ketika bekerja bersama anggota tim dalam organisasi.
+                        </p>
+
+                        <span class="skill-tag">
+                            Teamwork &middot; Communication
+                        </span>
+
+                    </article>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================================================
+             EXPERIENCE SECTION
+             Experience items use semantic <article> elements.
+             Grid allows cards to change from three columns
+             on desktop into one column on mobile.
+             ================================================== -->
+        <section
+            class="content-section experience-section"
+            id="experience"
+            aria-labelledby="experience-title"
+        >
+
+            <div class="container">
+
+                <header class="section-heading">
+
+                    <p class="section-kicker">
+                        Organization
+                    </p>
+
+                    <h2 id="experience-title" class="section-title">
+                        Experience
+                    </h2>
+
+                    <p class="section-description">
+                        Pengalaman kepanitiaan dan organisasi yang membantu
+                        saya mengembangkan kemampuan komunikasi, kolaborasi,
+                        dan tanggung jawab dalam tim.
+                    </p>
+
+                </header>
+
+
+                <div class="experience-grid">
+
+                    <article class="experience-card">
+
+                        <div class="experience-number" aria-hidden="true">
+                            01
+                        </div>
+
+                        <div class="experience-content">
+
+                            <p class="experience-label">
+                                Media Partner
+                            </p>
+
+                            <h3>
+                                Staff Media Partner
+                            </h3>
+
+                            <p class="experience-organization">
+                                Compfeest 18
+                            </p>
+
+                            <p>
+                                Berkontribusi sebagai Staff Media Partner
+                                dalam kepanitiaan Compfeest 18.
+                            </p>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="experience-card">
+
+                        <div class="experience-number" aria-hidden="true">
+                            02
+                        </div>
+
+                        <div class="experience-content">
+
+                            <p class="experience-label">
+                                Dana &amp; Usaha
+                            </p>
+
+                            <h3>
+                                Staff Dana &amp; Usaha
+                            </h3>
+
+                            <p class="experience-organization">
+                                PO Fasilkom 2026
+                            </p>
+
+                            <p>
+                                Berkontribusi sebagai Staff Dana &amp; Usaha
+                                dalam kegiatan PO Fasilkom 2026.
+                            </p>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="experience-card">
+
+                        <div class="experience-number" aria-hidden="true">
+                            03
+                        </div>
+
+                        <div class="experience-content">
+
+                            <p class="experience-label">
+                                Media
+                            </p>
+
+                            <h3>
+                                Staff Media
+                            </h3>
+
+                            <p class="experience-organization">
+                                BEM Fasilkom 2026
+                            </p>
+
+                            <p>
+                                Berkontribusi sebagai Staff Media dalam
+                                organisasi BEM Fasilkom 2026.
+                            </p>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </div>
+
+        </section>
+
     </main>
 
+
+    <!-- ======================================================
+         FOOTER
+         ====================================================== -->
     <footer class="site-footer">
+
         <div class="container">
-            <p>&copy; 2026 Angelica Christilia Talumewo. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
+
+            <p>
+                &copy; 2026 Angelica Christilia Talumewo.
+                Fakultas Ilmu Komputer, Universitas Indonesia.
+            </p>
+
         </div>
+
     </footer>
+
 </body>
 </html>
