@@ -1,826 +1,568 @@
-/* ============================================================
-   1. CSS RESET
-   Removes browser-default spacing inconsistencies.
-   border-box ensures width calculations already include
-   padding and borders.
-   ============================================================ */
+/*
+ * Portofolio Angelica - Tutorial 2
+ * Tema: charcoal dan mint, dengan tipografi tegas dan kartu yang ringan.
+ * Ganti isi static/css/style.css dengan seluruh isi file ini.
+ * Kompatibel dengan HTML profil yang dikirim dan Experience dari tutorial.
+ */
+
+/* 1. Warna dan pengaturan dasar */
+:root {
+    color-scheme: dark;
+    --bg: #0c1117;
+    --surface: #141c25;
+    --surface-raised: #1a2531;
+    --text: #f2f6f9;
+    --text-muted: #adbac8;
+    --accent: #82f4c4;
+    --accent-dark: #82f4c4;
+    --accent-soft: rgba(130, 244, 196, 0.09);
+    --line: #2c3947;
+    --radius: 18px;
+    --font-heading: "Space Grotesk", "Segoe UI", sans-serif;
+}
 
 *,
 *::before,
 *::after {
-    margin: 0;
-    padding: 0;
     box-sizing: border-box;
 }
 
-
-/* ============================================================
-   2. DESIGN TOKENS / CUSTOM PROPERTIES
-   Centralized variables make colors, spacing, radius, shadows,
-   and transitions reusable throughout the website.
-   ============================================================ */
-
-:root {
-    --ink: #1c1917;
-    --paper: #faf6f0;
-    --paper-soft: #f3ece2;
-
-    --accent: #d95d39;
-    --accent-dark: #a8442a;
-
-    --line: #e3d9c9;
-    --text-muted: #6b6459;
-
-    --white: #fffdf9;
-
-    --radius-sm: 4px;
-    --radius-md: 10px;
-
-    --shadow-card: 0 14px 35px rgba(28, 25, 23, 0.08);
-
-    --transition-fast: 0.2s ease;
-    --transition-normal: 0.3s ease;
-
-    --section-space: 6rem;
-}
-
-
-/* ============================================================
-   3. GLOBAL / BASE STYLES
-   ============================================================ */
-
 html {
     scroll-behavior: smooth;
-
-    /*
-       Prevents section titles from being hidden behind
-       the sticky navigation after clicking anchor links.
-    */
-    scroll-padding-top: 6rem;
+    scroll-padding-top: 7rem;
 }
 
 body {
     min-height: 100vh;
+    margin: 0;
+    background-color: var(--bg);
+    background-image:
+        radial-gradient(ellipse at 90% 4%, rgba(130, 244, 196, 0.08), transparent 35rem),
+        radial-gradient(ellipse at 0% 40%, rgba(76, 122, 187, 0.07), transparent 40rem);
+    color: var(--text);
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1.7;
+    overflow-wrap: break-word;
+}
 
-    font-family:
-        -apple-system,
-        "Segoe UI",
-        Roboto,
-        Helvetica,
-        Arial,
-        sans-serif;
+body,
+main,
+section {
+    min-width: 0;
+}
 
-    color: var(--ink);
-    background-color: var(--paper);
+::selection {
+    background: var(--accent);
+    color: var(--bg);
+}
 
-    line-height: 1.6;
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+a:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 5px;
+    border-radius: 5px;
 }
 
 img {
+    display: block;
     max-width: 100%;
 }
 
 h1,
 h2,
-h3,
-.brand {
-    font-family: "Space Grotesk", -apple-system, sans-serif;
+h3 {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.035em;
 }
 
-a {
-    color: inherit;
+p {
+    margin: 0;
 }
 
-
-/* Shared page-width container */
 .container {
-    width: min(100% - 3rem, 960px);
+    width: min(1140px, calc(100% - 3rem));
     margin-inline: auto;
 }
 
-
-/* ============================================================
-   4. ACCESSIBILITY
-   Provides a visible keyboard-focus indicator.
-   ============================================================ */
-
-a:focus-visible {
-    outline: 3px solid var(--accent);
-    outline-offset: 4px;
-}
-
-
-/* ============================================================
-   5. HEADER & NAVIGATION
-   Flexbox manages alignment between brand and navigation.
-
-   position: sticky creates useful CSS-only UI behavior without
-   JavaScript: navigation remains available while scrolling.
-   ============================================================ */
-
+/* 2. Header dan navigasi kedua halaman */
 .site-header {
     position: sticky;
     top: 0;
-    z-index: 100;
-
-    background-color: rgba(250, 246, 240, 0.96);
-
+    z-index: 20;
+    background: rgba(12, 17, 23, 0.96);
     border-bottom: 1px solid var(--line);
-
-    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
 }
 
 .header-inner {
-    min-height: 72px;
-
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
     align-items: center;
-
-    gap: 2rem;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+    min-height: 82px;
+    padding-block: 1rem;
 }
 
 .brand {
-    font-size: 1.3rem;
+    min-width: 0;
+    max-width: 100%;
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
     font-weight: 700;
-
-    color: var(--ink);
-
-    text-decoration: none;
-
-    transition: color var(--transition-fast);
+    line-height: 1.4;
+    letter-spacing: -0.025em;
 }
 
 .brand:hover {
     color: var(--accent);
 }
 
-
-.main-nav {
+.site-header nav {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-
-    gap: 1.75rem;
+    gap: 0.25rem 0.5rem;
 }
 
-.main-nav a {
-    position: relative;
-
-    padding-block: 0.4rem;
-
-    font-size: 0.9rem;
+.site-header nav a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    color: var(--text-muted);
+    font-size: 0.9375rem;
     font-weight: 600;
-
-    color: var(--ink);
-
-    text-decoration: none;
+    transition: color 180ms ease, background-color 180ms ease;
 }
 
-
-/*
-   Animated underline.
-   The pseudo-element expands from left to right on hover/focus.
-*/
-.main-nav a::after {
-    content: "";
-
-    position: absolute;
-
-    left: 0;
-    bottom: 0;
-
-    width: 100%;
-    height: 2px;
-
-    background-color: var(--accent);
-
-    transform: scaleX(0);
-    transform-origin: left;
-
-    transition: transform var(--transition-normal);
+.site-header nav a:hover,
+.site-header nav a:focus-visible,
+.site-header nav a[aria-current="page"] {
+    background: var(--accent-soft);
+    color: var(--accent);
 }
 
-.main-nav a:hover::after,
-.main-nav a:focus-visible::after {
-    transform: scaleX(1);
-}
-
-
-/* ============================================================
-   6. HERO / PROFILE
-   CSS Grid retains the layout concept introduced in Tutorial 01.
-   ============================================================ */
-
+/* 3. Profil: nama dan bio di kiri, foto di kanan */
 .hero {
-    padding: 5rem 0 6rem;
+    padding-block: clamp(3.5rem, 7vw, 6rem);
 }
 
 .hero-grid {
     display: grid;
-
-    grid-template-columns: 1.3fr 1fr;
-
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.9fr);
     grid-template-areas:
         "identity photo"
-        "details  photo";
-
-    gap: 1.75rem 3.5rem;
+        "details photo";
+    gap: 1.6rem clamp(2rem, 6vw, 5rem);
+    align-items: start;
 }
 
 .hero-identity {
     grid-area: identity;
+    min-width: 0;
+}
+
+.hero-kicker,
+.section-kicker {
+    margin-bottom: 1rem;
+    color: var(--accent);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.075em;
+    line-height: 1.6;
+    text-transform: uppercase;
+}
+
+.hero h1 {
+    max-width: 13ch;
+    font-size: clamp(2.5rem, 5.1vw, 4.4rem);
+    line-height: 1.06;
 }
 
 .hero-details {
     grid-area: details;
-}
-
-.hero-kicker {
-    margin-bottom: 0.8rem;
-
-    font-size: 0.8rem;
-    font-weight: 700;
-
-    letter-spacing: 0.09em;
-
-    text-transform: uppercase;
-
-    color: var(--accent-dark);
-}
-
-.hero-identity h1 {
-    max-width: 650px;
-
-    font-size: clamp(2.8rem, 6vw, 5rem);
-
-    line-height: 0.98;
-
-    letter-spacing: -0.04em;
+    min-width: 0;
 }
 
 .bio {
-    max-width: 520px;
-
-    margin-bottom: 1.6rem;
-
+    max-width: 53ch;
     color: var(--text-muted);
+    font-size: 1.0625rem;
+    line-height: 1.85;
 }
-
-
-/* Description-list layout for NPM and study program */
-.meta-list {
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 1rem 2rem;
-
-    margin-bottom: 1.6rem;
-}
-
-.meta-row dt {
-    margin-bottom: 0.15rem;
-
-    font-size: 0.72rem;
-
-    letter-spacing: 0.07em;
-
-    text-transform: uppercase;
-
-    color: var(--text-muted);
-}
-
-.meta-row dd {
-    font-weight: 600;
-}
-
-
-/* Social buttons use Flexbox so they wrap naturally. */
-.social-links {
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 0.6rem;
-}
-
-.social-link {
-    display: inline-flex;
-
-    align-items: center;
-    justify-content: center;
-
-    padding: 0.55rem 1.1rem;
-
-    border: 2px solid var(--ink);
-
-    border-radius: var(--radius-sm);
-
-    font-size: 0.85rem;
-    font-weight: 600;
-
-    color: var(--paper);
-    background-color: var(--ink);
-
-    text-decoration: none;
-
-    transition:
-        color var(--transition-fast),
-        background-color var(--transition-fast),
-        border-color var(--transition-fast),
-        transform var(--transition-fast);
-}
-
-.social-link:hover {
-    color: var(--white);
-
-    background-color: var(--accent);
-    border-color: var(--accent);
-
-    transform: translateY(-2px);
-}
-
-
-/* ============================================================
-   7. HERO PHOTO
-   A decorative absolute-positioned block creates a layered
-   visual effect without requiring another image.
-   ============================================================ */
 
 .hero-photo {
-    grid-area: photo;
-
-    align-self: center;
-
     position: relative;
+    isolation: isolate;
+    grid-area: photo;
+    align-self: center;
+    justify-self: center;
+    width: min(100%, 350px);
+    margin: 0;
+    padding: 0.9rem;
 }
 
 .photo-block {
     position: absolute;
-
-    top: 1.25rem;
-    left: 1.25rem;
-
-    width: 100%;
-    height: 100%;
-
-    background-color: var(--accent);
-
-    border-radius: var(--radius-sm);
-
-    z-index: 0;
-
-    transition: transform var(--transition-normal);
+    inset: 0.75rem;
+    z-index: -1;
+    border: 1px solid rgba(130, 244, 196, 0.65);
+    border-radius: 26px;
+    background: linear-gradient(145deg, rgba(130, 244, 196, 0.15), rgba(130, 244, 196, 0.025));
+    transform: rotate(6deg);
 }
 
 .avatar {
-    position: relative;
-
-    z-index: 1;
-
-    display: block;
-
     width: 100%;
-
-    aspect-ratio: 1 / 1;
-
+    aspect-ratio: 4 / 5;
     object-fit: cover;
-
-    border: 3px solid var(--ink);
-
-    border-radius: var(--radius-sm);
-
-    transition: transform var(--transition-normal);
+    object-position: center;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: var(--surface);
+    box-shadow: 0 24px 55px rgba(0, 0, 0, 0.3);
 }
 
-
-/*
-   CSS-only microinteraction:
-   image and decorative block move in opposite directions.
-*/
-.hero-photo:hover .avatar {
-    transform: translate(-4px, -4px);
+.meta-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2.25rem;
+    margin: 1.75rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
 }
 
-.hero-photo:hover .photo-block {
-    transform: translate(4px, 4px);
+.meta-row {
+    min-width: 0;
 }
 
+.meta-list dt {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
 
-/* ============================================================
-   8. SHARED SECTION STYLES
-   Reusable section styles avoid duplicated CSS.
-   ============================================================ */
+.meta-list dd {
+    margin: 0.3rem 0 0;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.5;
+}
 
-.content-section {
-    padding: var(--section-space) 0;
+.social-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-top: 1.75rem;
+}
+
+.social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0.6rem 1.15rem;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--surface);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+.social-link:hover {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--bg);
+}
+
+/* 4. Judul bagian Skills dan Experience */
+.content-section,
+.experience-section {
+    padding-block: clamp(3rem, 6vw, 5rem);
+    border-top: 1px solid var(--line);
+}
+
+.skills-section {
+    background: rgba(20, 28, 37, 0.45);
 }
 
 .section-heading {
     max-width: 650px;
-
-    margin-bottom: 2.5rem;
-}
-
-.section-kicker {
-    margin-bottom: 0.35rem;
-
-    font-size: 0.75rem;
-    font-weight: 700;
-
-    letter-spacing: 0.1em;
-
-    text-transform: uppercase;
-
-    color: var(--accent-dark);
+    margin-bottom: 2rem;
 }
 
 .section-title {
-    margin-bottom: 0.75rem;
-
-    font-size: clamp(2.3rem, 5vw, 3.4rem);
-
-    line-height: 1;
-
-    letter-spacing: -0.035em;
+    margin-bottom: 1rem;
+    font-size: clamp(2rem, 3.5vw, 3rem);
 }
 
 .section-description {
-    max-width: 600px;
-
+    max-width: 58ch;
     color: var(--text-muted);
 }
 
-
-/*
-   CSS :target creates subtle feedback when a navigation
-   anchor jumps to a section. No JavaScript is required.
-*/
-.content-section:target .section-title {
-    color: var(--accent-dark);
-}
-
-
-/* ============================================================
-   9. SKILLS
-   auto-fit + minmax lets the grid determine how many columns
-   fit without hard-coding every intermediate screen width.
-   ============================================================ */
-
-.skills-section {
-    background-color: var(--paper-soft);
-
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-}
-
-.skills-grid {
+/* 5. Kartu Skills */
+.skills-grid,
+.experience-grid {
     display: grid;
-
-    grid-template-columns:
-        repeat(auto-fit, minmax(min(100%, 240px), 1fr));
-
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1.25rem;
+}
+
+.skill-card,
+.experience-card {
+    position: relative;
+    min-width: 0;
+    padding: 1.75rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
 }
 
 .skill-card {
-    position: relative;
-
-    overflow: hidden;
-
-    min-height: 275px;
-
     display: flex;
     flex-direction: column;
-
-    padding: 1.75rem;
-
-    background-color: var(--white);
-
-    border: 1px solid var(--line);
-    border-radius: var(--radius-md);
-
-    transition:
-        transform var(--transition-normal),
-        box-shadow var(--transition-normal),
-        border-color var(--transition-normal);
-}
-
-
-/*
-   Accent line grows across the top of each card.
-*/
-.skill-card::before {
-    content: "";
-
-    position: absolute;
-
-    top: 0;
-    left: 0;
-
-    width: 100%;
-    height: 4px;
-
-    background-color: var(--accent);
-
-    transform: scaleX(0);
-    transform-origin: left;
-
-    transition: transform var(--transition-normal);
-}
-
-.skill-card:hover {
-    transform: translateY(-8px);
-
-    border-color: var(--accent);
-
-    box-shadow: var(--shadow-card);
-}
-
-.skill-card:hover::before {
-    transform: scaleX(1);
+    align-items: flex-start;
 }
 
 .card-index {
-    margin-bottom: 2.25rem;
-
-    font-family: "Space Grotesk", sans-serif;
-
-    font-size: 0.8rem;
+    margin-bottom: 1.75rem;
+    color: var(--accent);
+    font-family: var(--font-heading);
+    font-size: 0.875rem;
     font-weight: 700;
-
-    color: var(--accent-dark);
+    letter-spacing: 0.08em;
 }
 
-.skill-card h3 {
-    margin-bottom: 0.75rem;
-
-    font-size: 1.15rem;
-
-    line-height: 1.25;
+.skill-card h3,
+.experience-card h2,
+.experience-card h3 {
+    margin-bottom: 0.9rem;
+    font-size: 1.375rem;
+    line-height: 1.35;
+    letter-spacing: -0.025em;
 }
 
-.skill-card p {
-    margin-bottom: 1.5rem;
-
+.skill-card > p,
+.experience-content > p:not(.experience-label):not(.experience-organization),
+.experience-description {
     color: var(--text-muted);
+    line-height: 1.75;
+}
 
-    font-size: 0.92rem;
+.skill-card > p {
+    margin-bottom: 1.5rem;
+}
+
+.skill-tag,
+.experience-category,
+.experience-label {
+    display: inline-block;
+    max-width: 100%;
+    padding: 0.35rem 0.75rem;
+    border: 1px solid rgba(130, 244, 196, 0.18);
+    border-radius: 7px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.5;
 }
 
 .skill-tag {
-    align-self: flex-start;
-
     margin-top: auto;
-
-    padding: 0.35rem 0.65rem;
-
-    border: 1px solid var(--line);
-
-    border-radius: 999px;
-
-    font-size: 0.72rem;
-    font-weight: 700;
-
-    letter-spacing: 0.04em;
-
-    color: var(--accent-dark);
-
-    background-color: var(--paper);
 }
 
-
-/* ============================================================
-   10. EXPERIENCE
-   Another CSS Grid layout, but with a different visual
-   structure from Skills so the two sections do not feel
-   repetitive.
-   ============================================================ */
-
-.experience-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, minmax(0, 1fr));
-
-    gap: 1.25rem;
-}
-
+/* 6. Kartu Experience: mendukung versi Tugas 1 dan versi dinamis */
 .experience-card {
-    display: grid;
-
-    grid-template-columns: auto 1fr;
-
-    gap: 1rem;
-
-    padding: 1.5rem;
-
-    border-top: 3px solid var(--ink);
-    border-bottom: 1px solid var(--line);
-
-    transition:
-        transform var(--transition-normal),
-        border-color var(--transition-normal),
-        background-color var(--transition-normal);
-}
-
-.experience-card:hover {
-    transform: translateY(-5px);
-
-    border-top-color: var(--accent);
-
-    background-color: var(--paper-soft);
+    border-top: 3px solid rgba(130, 244, 196, 0.65);
 }
 
 .experience-number {
-    font-family: "Space Grotesk", sans-serif;
-
-    font-size: 1.8rem;
+    position: absolute;
+    top: 1.8rem;
+    right: 1.4rem;
+    color: var(--text-muted);
+    font-family: var(--font-heading);
+    font-size: 0.875rem;
     font-weight: 700;
-
-    line-height: 1;
-
-    color: var(--line);
-
-    transition: color var(--transition-fast);
 }
 
-.experience-card:hover .experience-number {
-    color: var(--accent);
+.experience-content {
+    min-width: 0;
 }
 
+.experience-content .experience-label {
+    max-width: calc(100% - 2.5rem);
+}
+
+.experience-category,
 .experience-label {
-    margin-bottom: 0.35rem;
-
-    font-size: 0.68rem;
-    font-weight: 700;
-
-    letter-spacing: 0.09em;
-
-    text-transform: uppercase;
-
-    color: var(--accent-dark);
-}
-
-.experience-content h3 {
-    margin-bottom: 0.25rem;
-
-    font-size: 1.1rem;
+    margin-bottom: 1.4rem;
 }
 
 .experience-organization {
-    margin-bottom: 0.9rem;
-
+    margin-bottom: 0.8rem;
+    color: var(--text);
+    font-size: 1rem;
     font-weight: 600;
-
-    color: var(--ink);
 }
 
-.experience-content > p:last-child {
-    font-size: 0.9rem;
-
-    color: var(--text-muted);
-}
-
-
-/* ============================================================
-   11. FOOTER
-   ============================================================ */
-
-.site-footer {
-    padding: 1.75rem 0;
-
-    color: var(--text-muted);
-
-    font-size: 0.82rem;
-
+.experience-status {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
     border-top: 1px solid var(--line);
+    color: var(--text);
+    font-size: 0.875rem;
+    font-weight: 600;
 }
 
+main > .experience-section:not(.content-section) {
+    min-height: calc(100vh - 190px);
+    border-top: 0;
+}
 
-/* ============================================================
-   12. TABLET
-   Experience changes from 3 columns to 2 when necessary.
-   ============================================================ */
+.experience-section h1 {
+    margin-bottom: 2.5rem;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+}
 
-@media (max-width: 820px) {
+.empty-state {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 3rem 1.5rem;
+    border: 1px dashed var(--line);
+    border-radius: var(--radius);
+    background: rgba(20, 28, 37, 0.6);
+    color: var(--text-muted);
+    text-align: center;
+}
 
-    :root {
-        --section-space: 4.5rem;
+/* 7. Footer */
+.site-footer {
+    padding-block: 1.75rem;
+    border-top: 1px solid var(--line);
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    line-height: 1.7;
+}
+
+/* Efek hover hanya untuk perangkat dengan pointer seperti mouse. */
+@media (hover: hover) and (pointer: fine) {
+    .skill-card:hover,
+    .experience-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--accent);
+        box-shadow: 0 18px 38px rgba(0, 0, 0, 0.22);
+    }
+}
+
+/* 8. Tablet dan layar yang lebih sempit */
+@media (max-width: 960px) {
+    .hero-grid {
+        column-gap: 2rem;
     }
 
+    .skills-grid,
     .experience-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
-
-/* ============================================================
-   13. MOBILE
-   Content priority:
-   1. Name
-   2. Photo
-   3. Personal details
-   4. Skills / Experience
-
-   Large desktop grid layouts collapse into single columns.
-   ============================================================ */
-
-@media (max-width: 600px) {
+/* 9. HP: nama, foto, lalu detail profil */
+@media (max-width: 700px) {
+    html {
+        scroll-padding-top: 2rem;
+    }
 
     .container {
-        width: min(100% - 2rem, 960px);
+        width: calc(100% - 2.5rem);
     }
 
+    .site-header {
+        position: relative;
+    }
 
-    /* Header stacks when navigation space becomes limited. */
     .header-inner {
-        min-height: auto;
-
-        flex-direction: column;
-
         align-items: flex-start;
-
-        gap: 0.7rem;
-
-        padding-block: 1rem;
+        gap: 0.6rem;
     }
 
-    .main-nav {
+    .brand {
         width: 100%;
-
-        gap: 1rem;
-
-        overflow-x: auto;
-
-        padding-bottom: 0.2rem;
     }
 
+    .site-header nav {
+        margin-left: -0.75rem;
+        gap: 0.2rem;
+    }
 
-    /* Hero changes from two-column Grid to one column. */
-    .hero {
-        padding: 3.5rem 0 4.5rem;
+    .site-header nav a {
+        padding-inline: 0.75rem;
     }
 
     .hero-grid {
-        grid-template-columns: 1fr;
-
+        grid-template-columns: minmax(0, 1fr);
         grid-template-areas:
             "identity"
             "photo"
             "details";
-
         gap: 2rem;
     }
 
-    .hero-identity h1 {
-        font-size: clamp(2.5rem, 13vw, 4rem);
+    .hero h1 {
+        font-size: clamp(2.5rem, 10vw, 3.5rem);
     }
 
     .hero-photo {
-        max-width: 240px;
+        justify-self: start;
+        width: min(100%, 290px);
     }
 
-    .meta-list {
-        flex-direction: column;
-
-        gap: 0.9rem;
-    }
-
-
-    /* Grid cards become one-column for comfortable reading. */
     .skills-grid,
     .experience-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
-    .skill-card {
-        min-height: auto;
+    .skill-card,
+    .experience-card {
+        padding: 1.5rem;
     }
 
-    .section-heading {
-        margin-bottom: 2rem;
+    .experience-section h1 {
+        font-size: clamp(2rem, 9vw, 3rem);
     }
 }
 
-
-/* ============================================================
-   14. REDUCED MOTION ACCESSIBILITY
-   Users who request reduced motion through their OS/browser
-   should not be forced to see transitions or smooth scrolling.
-   ============================================================ */
-
+/* Hormati pengaturan aksesibilitas pengguna yang mengurangi gerakan. */
 @media (prefers-reduced-motion: reduce) {
-
     html {
         scroll-behavior: auto;
     }
 
-    *,
-    *::before,
-    *::after {
-        transition-duration: 0.01ms !important;
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
+    .site-header nav a,
+    .social-link,
+    .skill-card,
+    .experience-card {
+        transition: none;
+    }
+
+    .skill-card:hover,
+    .experience-card:hover {
+        transform: none;
     }
 }

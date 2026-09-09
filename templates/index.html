@@ -9,7 +9,7 @@
         content="Portfolio of Angelica Christilia Talumewo, Information Systems student at Universitas Indonesia."
     >
 
-    <title>Angelica Christilia Talumewo - Portfolio</title>
+    <title>{{ name }} - Portfolio</title>
 
     <link
         rel="icon"
@@ -39,14 +39,11 @@
     <header class="site-header">
         <div class="container header-inner">
 
-            <a href="#profile" class="brand">
-                Angelica
-            </a>
+            <a href="{% url 'main:show_main' %}" class="brand">{{ name }}</a>
 
-            <nav class="main-nav" aria-label="Main navigation">
-                <a href="#profile">Profile</a>
-                <a href="#skills">Skills</a>
-                <a href="#experience">Experience</a>
+            <nav>
+                <a href="{% url 'main:show_main' %}">Profile</a>
+                <a href="{% url 'main:show_experience' %}">Experience</a>
             </nav>
 
         </div>
@@ -70,9 +67,7 @@
                         Sistem Informasi &middot; Universitas Indonesia
                     </p>
 
-                    <h1>
-                        Angelica Christilia Talumewo
-                    </h1>
+                    <h1>{{ name }}</h1>
 
                 </div>
 
@@ -85,7 +80,7 @@
                     <img
                         class="avatar"
                         src="/static/img/foto_Angel.png"
-                        alt="Photo of Angelica Christilia Talumewo"
+                        alt="Photo of {{ name }}"
                     >
 
                 </div>
@@ -93,22 +88,19 @@
 
                 <div class="hero-details">
 
-                    <p class="bio">
-                        Mahasiswa jurusan Sistem Informasi Fakultas Ilmu Komputer
-                        Universitas Indonesia yang saat ini berada di semester 3.
-                    </p>
+                    <p class="bio">{{ bio }}</p>
 
 
                     <dl class="meta-list">
 
                         <div class="meta-row">
                             <dt>NPM</dt>
-                            <dd>2506536313</dd>
+                            <dd>{{ npm }}</dd>
                         </div>
 
                         <div class="meta-row">
                             <dt>Program</dt>
-                            <dd>S1 Sistem Informasi</dd>
+                            <dd>{{ study_program }}</dd>
                         </div>
 
                     </dl>
@@ -402,10 +394,7 @@
 
         <div class="container">
 
-            <p>
-                &copy; 2026 Angelica Christilia Talumewo.
-                Fakultas Ilmu Komputer, Universitas Indonesia.
-            </p>
+            <p>&copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
 
         </div>
 
