@@ -415,3 +415,174 @@ Dokumentasi percakapan AI:
 
 Portfolio ini akan terus dikembangkan pada tutorial dan tugas berikutnya seiring
 bertambahnya materi pada mata kuliah Pemrograman Berbasis Platform.
+
+### Tugas 2
+
+Pada tugas ini, saya menambahkan model `Project` dan halaman Projects untuk menampilkan proyek portofolio secara dinamis. Pengembangan tambahan meliputi pencarian proyek, halaman detail, serta pengujian otomatis.
+
+#### 1. Alur request hingga halaman ditampilkan
+
+Ketika pengguna membuka `/projects/`, Django mencocokkan alamat tersebut melalui `portofolio/urls.py`, kemudian meneruskannya ke `main/urls.py`. Rute tersebut menjalankan fungsi `show_projects` pada `main/views.py`.
+
+View mengambil data melalui model `Project`. Jika terdapat parameter pencarian `q`, data disaring berdasarkan judul, deskripsi, atau teknologi. Data kemudian dikirim melalui context dengan kunci `name`, `project_list`, dan `query`.
+
+Template `projects.html` menggunakan Django Template Language untuk menampilkan setiap proyek sebagai kartu. Jika daftar kosong, template menampilkan pesan yang sesuai. Hasil render dikirim sebagai respons HTML dan ditampilkan oleh browser dengan stylesheet yang terhubung.
+
+Untuk halaman detail, rute `/projects/<int:pk>/` menjalankan `show_project_detail`. View mengambil proyek berdasarkan primary key dan merender `project_detail.html`. Proyek yang tidak ditemukan menghasilkan status 404 melalui `get_object_or_404`.
+
+#### 2. Alasan menggunakan model dibandingkan data yang ditulis langsung dalam template
+
+Model memisahkan penyimpanan data dari tampilan. Judul, deskripsi, teknologi, dan URL repositori dapat ditambahkan atau diperbarui melalui database tanpa mengubah struktur HTML setiap kartu.
+
+Data yang sama juga dapat digunakan pada halaman daftar, hasil pencarian, dan halaman detail. Dengan demikian, perubahan informasi proyek cukup dilakukan pada satu sumber data.
+
+Template tetap digunakan untuk mengatur struktur tampilan dan label antarmuka, sedangkan isi proyek berasal dari model. Pemisahan ini memudahkan pemeliharaan dan pengembangan fitur berikutnya.
+
+#### 3. Perbedaan makemigrations dan migrate
+
+`python manage.py makemigrations` membuat berkas migrasi yang mencatat perubahan definisi model.
+
+`python manage.py migrate` menerapkan instruksi migrasi tersebut pada database.
+
+Contoh pada tugas ini adalah penambahan model `Project`. Perintah `makemigrations` menghasilkan `main/migrations/0002_project.py`, kemudian `migrate` menerapkannya untuk membuat tabel yang diperlukan.
+
+Penambahan atau perubahan isi data proyek tidak memerlukan migrasi selama struktur model tidak berubah.
+
+#### Implementasi model
+
+Model `Project` memiliki empat field selain primary key otomatis:
+
+| Field | Tipe | Kegunaan |
+| --- | --- | --- |
+| `title` | `CharField(max_length=255)` | Menyimpan judul proyek |
+| `description` | `TextField` | Menyimpan penjelasan proyek |
+| `technologies` | `CharField(max_length=255)` | Menyimpan teknologi yang digunakan |
+| `repository_url` | `URLField(blank=True)` | Menyimpan tautan repositori yang boleh dikosongkan |
+
+`__str__()` mengembalikan judul proyek agar objek mudah dikenali.
+
+#### Fitur dan keputusan implementasi
+
+- Halaman Projects menampilkan data menggunakan perulangan template.
+- Pesan “Belum ada proyek yang ditambahkan.” ditampilkan ketika daftar proyek kosong.
+- Pencarian menggunakan `Q` dan `icontains` pada judul, deskripsi, serta teknologi. Kecocokan pada salah satu field sudah cukup untuk menampilkan proyek.
+- Spasi di awal dan akhir kata kunci dibersihkan. Pencarian kosong menampilkan seluruh proyek.
+- Pencarian tanpa kecocokan menampilkan pesan yang berbeda dari kondisi belum ada data.
+- Halaman detail menampilkan informasi proyek sesuai ID pada URL.
+- Tombol “Lihat repositori” ditampilkan hanya jika URL repositori tersedia.
+- Navigasi dan tautan detail menggunakan named URL Django.
+- Tombol “Lihat detail” dan “Lihat repositori” dikelompokkan di bawah deskripsi agar tindakan pada kartu mudah ditemukan.
+- CSS pencarian dipisahkan dalam `project-search.css` dan dimuat setelah `style.css`.
+
+Bentuk kolom pencarian menggunakan referensi visual SLCM yang saya berikan, kemudian disesuaikan dengan warna gelap dan aksen mint portofolio.
+
+#### Menjalankan proyek dari clone baru
+
+Kode Tugas 2 tersedia pada branch `master`.
+
+Contoh berikut menggunakan Command Prompt Windows:
+
+```bat
+git clone --branch master https://github.com/christxiegut/myportofolio.git
+cd myportofolio
+python -m venv env
+env\Scripts\activate.bat
+python -m pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
+```
+
+Halaman yang dapat dibuka:
+
+- Profile: http://127.0.0.1:8000/
+- Experience: http://127.0.0.1:8000/experience/
+- Projects: http://127.0.0.1:8000/projects/
+
+Halaman detail dibuka melalui tombol “Lihat detail” pada kartu proyek.
+
+#### Menambahkan contoh data proyek
+
+Untuk menyediakan data pada database lokal, hentikan server lalu jalankan:
+
+```bat
+python manage.py shell
+```
+
+Masukkan kode berikut:
+
+```python
+from main.models import Project
+
+Project.objects.get_or_create(
+    title="Website Portofolio Pribadi",
+    defaults={
+        "description": (
+            "Website untuk menampilkan profil, pengalaman organisasi, "
+            "dan proyek pribadi dengan pola Model-View-Template."
+        ),
+        "technologies": "Python, Django, HTML, CSS",
+        "repository_url": "https://github.com/christxiegut/myportofolio",
+    },
+)
+```
+
+Penggunaan `get_or_create` memungkinkan contoh data ini dijalankan kembali tanpa membuat duplikat berdasarkan judul tersebut.
+
+Keluar dengan `exit()`, kemudian jalankan kembali server.
+
+#### Pengujian
+
+Seluruh tes dijalankan menggunakan:
+
+```bat
+python manage.py test
+```
+
+Hasil pengujian lokal pada 14 September 2026:
+
+```text
+Found 18 test(s).
+Ran 18 tests in 0.349s
+
+OK
+```
+
+| Berkas | Jumlah tes | Cakupan |
+| --- | ---: | --- |
+| `main/tests.py` | 6 | Profil, Experience, model Experience, serta respons halaman |
+| `main/test_projects.py` | 9 | Daftar proyek, template, isi data, kondisi kosong, URL repositori opsional, dan pencarian |
+| `main/test_project_detail.py` | 3 | Data detail sesuai ID, proyek yang tidak ditemukan, dan tautan detail setiap kartu |
+| **Total** | **18** | **Seluruh tes lulus** |
+
+Pengujian menggunakan database terpisah dari data portofolio lokal. Hasil ini memverifikasi skenario yang diuji pada lingkungan lokal, termasuk pemilihan proyek yang benar dan kondisi data tidak ditemukan.
+
+#### Penggunaan AI dan log bantuan
+
+Saya menggunakan ChatGPT untuk membantu memahami instruksi, menyusun dan merevisi kode, serta membuat draf dokumentasi. Bagian yang dibantu mencakup model, view, routing, template, CSS, dan pengujian otomatis.
+
+Saya menerapkan perubahan pada proyek, menjalankan perintah Django, memeriksa tampilan di browser, memberikan masukan desain, dan menjalankan seluruh tes.
+
+Berikut ringkasan log bantuan AI ChatGPT:
+
+| Kebutuhan | Arahan dan bantuan yang diperoleh | Penerapan |
+| --- | --- | --- |
+| Memahami implementasi Tugas 2 | Penjelasan dan contoh kode model, view, routing, serta template | Menambahkan model Project dan halaman yang menampilkan data secara dinamis |
+| Mengembangkan tugas berdasarkan rubrik skala 4 | Saran fitur tambahan dan aspek yang perlu diperiksa | Menambahkan pencarian, halaman detail, dan pengujian fitur |
+| Menyempurnakan tampilan | Arahan dan contoh HTML/CSS berdasarkan referensi yang saya berikan | Menyesuaikan kolom pencarian serta menempatkan kedua tombol bersebelahan |
+| Memeriksa fungsi aplikasi | Arahan skenario pengujian dan contoh kode unit test | Menjalankan seluruh pengujian dengan hasil 18 tes lulus |
+| Melengkapi README | Bantuan menyusun draf penjelasan implementasi, pengujian, dan refleksi | Menyesuaikan dokumentasi dengan pekerjaan dan hasil pengujian yang dilakukan |
+
+#### Refleksi implementasi
+
+Saya belajar bahwa fitur yang berfungsi tetap perlu diperiksa dari sisi penggunaannya. Pada halaman Projects, tombol detail awalnya berada di bawah judul, sedangkan tombol repositori berada di bawah deskripsi. Setelah melihat hasilnya, saya meminta keduanya dikelompokkan agar lebih rapi.
+
+Pengujian juga perlu memeriksa isi halaman, bukan hanya keberhasilan akses. Tes detail menggunakan dua proyek untuk memastikan halaman menampilkan objek sesuai ID yang diminta. Tes pencarian memeriksa beberapa field, kata kunci kosong, spasi tambahan, dan hasil yang tidak ditemukan.
+
+Saat ini teknologi proyek disimpan sebagai teks. Pendekatan ini cukup untuk portofolio sederhana, tetapi pengembangan filter teknologi yang lebih terstruktur dapat menggunakan model teknologi tersendiri agar penamaannya konsisten.
+
+#### Referensi
+
+- Materi Tutorial 2 dan instruksi Tugas 2 mata kuliah PBP.
+- [Django: Making queries](https://docs.djangoproject.com/en/5.2/topics/db/queries/)
+- [Django: Shortcut functions](https://docs.djangoproject.com/en/5.2/topics/http/shortcuts/)
+- [Django: Writing and running tests](https://docs.djangoproject.com/en/5.2/topics/testing/overview/)
