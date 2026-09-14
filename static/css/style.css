@@ -566,3 +566,47 @@ main > .experience-section:not(.content-section) {
         transform: none;
     }
 }
+
+.project-search {
+    margin-bottom: 1.5rem;
+}
+
+.project-search label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.search-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.search-controls input {
+    flex: 1 1 250px;
+    min-width: 0;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+}
+
+.search-controls button {
+    color: var(--text);
+    font: inherit;
+    cursor: pointer;
+}
+
+.search-controls input:focus-visible,
+.search-controls button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+.search-summary {
+    margin-bottom: 1.5rem;
+    color: var(--text-muted);
+}

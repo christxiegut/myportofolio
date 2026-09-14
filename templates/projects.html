@@ -1,9 +1,9 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <meta
         name="description"
         content="Portfolio of Angelica Christilia Talumewo, Information Systems student at Universitas Indonesia."
@@ -11,34 +11,22 @@
 
     <title>Projects - {{ name }}</title>
 
-    <link
-        rel="icon"
-        type="image/jpeg"
-        href="/static/img/logo_title.jpg"
-    >
+    <link rel="icon" type="image/jpeg" href="{% static 'img/logo_title.jpg' %}">
 
-    <!-- Google Font used for headings and visual identity -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
     <link
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap"
         rel="stylesheet"
     >
 
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/project-search.css' %}">
 </head>
 
 <body>
-
-    <!-- ======================================================
-         SITE HEADER
-         Sticky navigation allows users to move between
-         portfolio sections without JavaScript.
-         ====================================================== -->
     <header class="site-header">
         <div class="container header-inner">
-
             <a href="{% url 'main:show_main' %}" class="brand">{{ name }}</a>
 
             <nav class="main-nav" aria-label="Main navigation">
@@ -46,63 +34,116 @@
                 <a href="{% url 'main:show_experience' %}">Experience</a>
                 <a href="{% url 'main:show_projects' %}">Projects</a>
             </nav>
-
         </div>
     </header>
-    
+
     <main>
-    <section class="experience-section">
-        <div class="container">
-            <p class="section-kicker">Karya yang saya kembangkan</p>
-            <h1>Projects</h1>
+        <section class="experience-section">
+            <div class="container">
+                <p class="section-kicker">Karya yang saya kembangkan</p>
+                <h1>Projects</h1>
 
-            <div class="experience-grid">
-                {% for project in project_list %}
-                    <article class="experience-card">
-                        <span class="experience-category">
-                            {{ project.technologies }}
-                        </span>
+                <form method="get"
+                      action="{% url 'main:show_projects' %}"
+                      class="project-search project-search--pill"
+                      role="search">
+                    <label for="project-query" class="project-search__label">
+                        Cari proyek
+                    </label>
 
-                        <h2>{{ project.title }}</h2>
+                    <div class="project-search__bar">
+                        <button type="submit"
+                                class="project-search__submit"
+                                aria-label="Cari proyek"
+                                title="Cari proyek">
+                            <svg viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="1.8"
+                                 stroke-linecap="round" aria-hidden="true">
+                                <circle cx="10.5" cy="10.5" r="6.5"></circle>
+                                <path d="M16 16l4.5 4.5"></path>
+                            </svg>
+                        </button>
 
-                        <p class="experience-description">
-                            {{ project.description }}
-                        </p>
+                        <input type="search"
+                               id="project-query"
+                               name="q"
+                               value="{{ query }}"
+                               class="project-search__input"
+                               placeholder="Cari proyek atau teknologi..."
+                               enterkeyhint="search">
 
-                        {% if project.repository_url %}
-                            <div class="experience-status">
-                                <a href="{{ project.repository_url }}"
-                                   class="social-link"
-                                   target="_blank"
-                                   rel="noopener noreferrer">
-                                    Lihat repositori
-                                </a>
-                            </div>
+                        {% if query %}
+                            <a href="{% url 'main:show_projects' %}"
+                               class="project-search__clear"
+                               aria-label="Hapus pencarian dan tampilkan semua proyek"
+                               title="Tampilkan semua proyek">
+                                <svg viewBox="0 0 24 24" fill="none"
+                                     stroke="currentColor" stroke-width="1.8"
+                                     stroke-linecap="round" aria-hidden="true">
+                                    <path d="M6 6l12 12M18 6L6 18"></path>
+                                </svg>
+                            </a>
+                        {% else %}
+                            <span class="project-search__hint" aria-hidden="true">
+                                Enter ↵
+                            </span>
                         {% endif %}
-                    </article>
-                {% empty %}
-                    <p class="empty-state">
-                        Belum ada proyek yang ditambahkan.
+                    </div>
+                </form>
+
+                {% if query %}
+                    <p class="search-summary">
+                        {{ project_list|length }} proyek ditemukan untuk “{{ query }}”.
                     </p>
-                {% endfor %}
+                {% endif %}
+
+                <div class="experience-grid">
+                    {% for project in project_list %}
+                        <article class="experience-card">
+                            <span class="experience-category">
+                                {{ project.technologies }}
+                            </span>
+
+                            <h2>{{ project.title }}</h2>
+
+                            <p class="experience-description">
+                                {{ project.description }}
+                            </p>
+
+                            <div class="social-links">
+                                <a href="{% url 'main:show_project_detail' project.pk %}"
+                                class="social-link">
+                                    Lihat detail
+                                </a>
+
+                                {% if project.repository_url %}
+                                    <a href="{{ project.repository_url }}"
+                                    class="social-link"
+                                    target="_blank"
+                                    rel="noopener noreferrer">
+                                        Lihat repositori
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </article>
+                    {% empty %}
+                        <p class="empty-state">
+                            {% if query %}
+                                Tidak ada proyek yang cocok dengan pencarianmu.
+                            {% else %}
+                                Belum ada proyek yang ditambahkan.
+                            {% endif %}
+                        </p>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
-    </section>
-</main>
+        </section>
+    </main>
 
-
-    <!-- ======================================================
-         FOOTER
-         ====================================================== -->
     <footer class="site-footer">
-
         <div class="container">
-
             <p>&copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
-
         </div>
-
     </footer>
-
 </body>
 </html>

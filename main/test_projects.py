@@ -61,3 +61,51 @@ class ProjectTests(TestCase):
 
         self.assertContains(response, self.project.title)
         self.assertNotContains(response, "Lihat repositori")
+
+    def test_search_matches_each_field_case_insensitively(self):
+        """Judul, deskripsi, atau teknologi dapat menjadi kata kunci."""
+        unrelated_project = Project.objects.create(
+            title="Situs Cuaca",
+            description="Prakiraan suhu harian.",
+            technologies="JavaScript",
+        )
+
+        for keyword in ("PORTOFOLIO", "DAFTAR", "django"):
+            with self.subTest(keyword=keyword):
+                response = self.client.get(self.url, {"q": keyword})
+
+                self.assertContains(response, self.project.title)
+                self.assertNotContains(response, unrelated_project.title)
+
+    def test_search_without_matches_displays_specific_message(self):
+        """Hasil pencarian kosong dibedakan dari daftar proyek kosong."""
+        response = self.client.get(self.url, {"q": "zzztidakcocokzzz"})
+
+        self.assertContains(
+            response, "Tidak ada proyek yang cocok dengan pencarianmu."
+        )
+        self.assertNotContains(response, self.project.title)
+        self.assertNotContains(response, "Belum ada proyek yang ditambahkan.")
+
+    def test_search_ignores_surrounding_spaces(self):
+        """Spasi di awal dan akhir kata kunci tidak menghilangkan hasil."""
+        response = self.client.get(self.url, {"q": "  DJANGO  "})
+
+        self.assertContains(response, self.project.title)
+        self.assertEqual(response.context["query"], "DJANGO")
+
+    def test_blank_search_displays_all_projects(self):
+        """Kata kunci kosong atau hanya spasi menampilkan seluruh proyek."""
+        another_project = Project.objects.create(
+            title="Situs Cuaca",
+            description="Prakiraan suhu harian.",
+            technologies="JavaScript",
+        )
+
+        for keyword in ("", "   "):
+            with self.subTest(keyword=keyword):
+                response = self.client.get(self.url, {"q": keyword})
+
+                self.assertContains(response, self.project.title)
+                self.assertContains(response, another_project.title)
+                self.assertEqual(response.context["query"], "")
