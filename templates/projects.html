@@ -1,149 +1,117 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta
-        name="description"
-        content="Portfolio of Angelica Christilia Talumewo, Information Systems student at Universitas Indonesia."
-    >
+{% extends 'base.html' %}
 
+{% block meta %}
     <title>Projects - {{ name }}</title>
+{% endblock meta %}
 
-    <link rel="icon" type="image/jpeg" href="{% static 'img/logo_title.jpg' %}">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap"
-        rel="stylesheet"
-    >
-
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="stylesheet" href="{% static 'css/project-search.css' %}">
-</head>
-
-<body>
-    <header class="site-header">
-        <div class="container header-inner">
-            <a href="{% url 'main:show_main' %}" class="brand">{{ name }}</a>
-
-            <nav class="main-nav" aria-label="Main navigation">
-                <a href="{% url 'main:show_main' %}">Profile</a>
-                <a href="{% url 'main:show_experience' %}">Experience</a>
-                <a href="{% url 'main:show_projects' %}">Projects</a>
-            </nav>
-        </div>
-    </header>
-
-    <main>
-        <section class="experience-section">
-            <div class="container">
-                <p class="section-kicker">Karya yang saya kembangkan</p>
+{% block content %}
+<main>
+    <section class="experience-section">
+        <div class="container">
+            <p class="section-kicker">Karya yang saya kembangkan</p>
+            <div class="project-header">
                 <h1>Projects</h1>
+                <a href="{% url 'main:create_project' %}" class="button project-add-button">
+                    <span aria-hidden="true">+</span> Tambah proyek
+                </a>
+            </div>
 
-                <form method="get"
-                      action="{% url 'main:show_projects' %}"
-                      class="project-search project-search--pill"
-                      role="search">
-                    <label for="project-query" class="project-search__label">
-                        Cari proyek
-                    </label>
+            <form method="get"
+                  action="{% url 'main:show_projects' %}"
+                  class="project-search project-search--pill"
+                  role="search">
+                <label for="project-query" class="project-search__label">
+                    Cari proyek
+                </label>
 
-                    <div class="project-search__bar">
-                        <button type="submit"
-                                class="project-search__submit"
-                                aria-label="Cari proyek"
-                                title="Cari proyek">
+                <div class="project-search__bar">
+                    <button type="submit"
+                            class="project-search__submit"
+                            aria-label="Cari proyek"
+                            title="Cari proyek">
+                        <svg viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="1.8"
+                             stroke-linecap="round" aria-hidden="true">
+                            <circle cx="10.5" cy="10.5" r="6.5"></circle>
+                            <path d="M16 16l4.5 4.5"></path>
+                        </svg>
+                    </button>
+
+                    <input type="search"
+                           id="project-query"
+                           name="q"
+                           value="{{ query }}"
+                           class="project-search__input"
+                           placeholder="Cari proyek atau teknologi..."
+                           enterkeyhint="search">
+
+                    {% if query %}
+                        <a href="{% url 'main:show_projects' %}"
+                           class="project-search__clear"
+                           aria-label="Hapus pencarian dan tampilkan semua proyek"
+                           title="Tampilkan semua proyek">
                             <svg viewBox="0 0 24 24" fill="none"
                                  stroke="currentColor" stroke-width="1.8"
                                  stroke-linecap="round" aria-hidden="true">
-                                <circle cx="10.5" cy="10.5" r="6.5"></circle>
-                                <path d="M16 16l4.5 4.5"></path>
+                                <path d="M6 6l12 12M18 6L6 18"></path>
                             </svg>
-                        </button>
-
-                        <input type="search"
-                               id="project-query"
-                               name="q"
-                               value="{{ query }}"
-                               class="project-search__input"
-                               placeholder="Cari proyek atau teknologi..."
-                               enterkeyhint="search">
-
-                        {% if query %}
-                            <a href="{% url 'main:show_projects' %}"
-                               class="project-search__clear"
-                               aria-label="Hapus pencarian dan tampilkan semua proyek"
-                               title="Tampilkan semua proyek">
-                                <svg viewBox="0 0 24 24" fill="none"
-                                     stroke="currentColor" stroke-width="1.8"
-                                     stroke-linecap="round" aria-hidden="true">
-                                    <path d="M6 6l12 12M18 6L6 18"></path>
-                                </svg>
-                            </a>
-                        {% else %}
-                            <span class="project-search__hint" aria-hidden="true">
-                                Enter ↵
-                            </span>
-                        {% endif %}
-                    </div>
-                </form>
-
-                {% if query %}
-                    <p class="search-summary">
-                        {{ project_list|length }} proyek ditemukan untuk “{{ query }}”.
-                    </p>
-                {% endif %}
-
-                <div class="experience-grid">
-                    {% for project in project_list %}
-                        <article class="experience-card">
-                            <span class="experience-category">
-                                {{ project.technologies }}
-                            </span>
-
-                            <h2>{{ project.title }}</h2>
-
-                            <p class="experience-description">
-                                {{ project.description }}
-                            </p>
-
-                            <div class="social-links">
-                                <a href="{% url 'main:show_project_detail' project.pk %}"
-                                class="social-link">
-                                    Lihat detail
-                                </a>
-
-                                {% if project.repository_url %}
-                                    <a href="{{ project.repository_url }}"
-                                    class="social-link"
-                                    target="_blank"
-                                    rel="noopener noreferrer">
-                                        Lihat repositori
-                                    </a>
-                                {% endif %}
-                            </div>
-                        </article>
-                    {% empty %}
-                        <p class="empty-state">
-                            {% if query %}
-                                Tidak ada proyek yang cocok dengan pencarianmu.
-                            {% else %}
-                                Belum ada proyek yang ditambahkan.
-                            {% endif %}
-                        </p>
-                    {% endfor %}
+                        </a>
+                    {% else %}
+                        <span class="project-search__hint" aria-hidden="true">
+                            Enter ↵
+                        </span>
+                    {% endif %}
                 </div>
-            </div>
-        </section>
-    </main>
+            </form>
 
-    <footer class="site-footer">
-        <div class="container">
-            <p>&copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
+            {% if query %}
+                <p class="search-summary">
+                    {{ project_list|length }} proyek ditemukan untuk “{{ query }}”.
+                </p>
+            {% endif %}
+
+            <div class="experience-grid">
+                {% for project in project_list %}
+                    <article class="experience-card">
+                        <span class="experience-category">
+                            {{ project.technologies }}
+                        </span>
+
+                        <h2>{{ project.title }}</h2>
+
+                        <p class="experience-description">
+                            {{ project.description }}
+                        </p>
+
+                        <div class="social-links">
+                            <a href="{% url 'main:show_project_detail' project.pk %}"
+                               class="social-link">
+                                Lihat detail
+                            </a>
+
+                            {% if project.repository_url %}
+                                <a href="{{ project.repository_url }}"
+                                   class="social-link"
+                                   target="_blank"
+                                   rel="noopener noreferrer">
+                                    Lihat repositori
+                                </a>
+                            {% endif %}
+
+                            {% include 'components/project_delete_modal.html' with project=project %}
+                        </div>
+                    </article>
+                {% empty %}
+                    <p class="empty-state">
+                        {% if query %}
+                            Tidak ada proyek yang cocok dengan pencarianmu.
+                        {% else %}
+                            Belum ada proyek yang ditambahkan.
+                        {% endif %}
+                    </p>
+                {% endfor %}
+            </div>
         </div>
-    </footer>
-</body>
-</html>
+    </section>
+</main>
+{% endblock content %}

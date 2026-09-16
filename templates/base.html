@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portofolio Angelica Christilia Talumewo, mahasiswa Sistem Informasi Universitas Indonesia.">
+    <link rel="icon" type="image/jpeg" href="{% static 'img/logo_title.jpg' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Urutan penting: tema pastel dibaca setelah CSS sebelumnya. -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/project-search.css' %}">
+    <link rel="stylesheet" href="{% static 'css/pastel.css' %}">
+
+    {% block meta %}
+        <title>Portfolio - {{ name|default:"Angelica Christilia Talumewo" }}</title>
+    {% endblock meta %}
+</head>
+<body>
+    <a class="skip-link" href="#page-content">Langsung ke isi halaman</a>
+
+    <div class="portfolio-shell">
+        <header class="site-header">
+            <div class="container header-inner">
+                <a href="{% url 'main:show_main' %}" class="brand">
+                    <span class="brand-spark" aria-hidden="true">✦</span>
+                    <span>{{ name|default:"Angelica Christilia Talumewo" }}</span>
+                </a>
+
+                {% with current=request.resolver_match.url_name %}
+                <nav class="main-nav" aria-label="Navigasi utama">
+                    <a href="{% url 'main:show_main' %}"{% if current == 'show_main' %} aria-current="page"{% endif %}>Profile</a>
+                    <a href="{% url 'main:show_experience' %}"{% if current == 'show_experience' %} aria-current="page"{% endif %}>Experience</a>
+                    <a href="{% url 'main:show_projects' %}"{% if current == 'show_projects' or current == 'show_project_detail' or current == 'create_project' %} aria-current="page"{% endif %}>Projects</a>
+                </nav>
+                {% endwith %}
+            </div>
+        </header>
+
+        {% if messages %}
+            <div class="container site-messages">
+                {% for message in messages %}
+                    <p class="site-message {{ message.tags }}" role="{% if message.level_tag == 'error' %}alert{% else %}status{% endif %}">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div id="page-content" tabindex="-1">
+            {% block content %}{% endblock content %}
+        </div>
+
+        <footer class="site-footer">
+            <div class="container">
+                <p class="footer-note">^-^</p>
+                <p>&copy; 2026 {{ name|default:"Angelica Christilia Talumewo" }}. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

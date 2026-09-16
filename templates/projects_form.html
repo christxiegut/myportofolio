@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+    <title>Tambah Proyek - {{ name }}</title>
+{% endblock meta %}
+
+{% block content %}
+<main>
+    <section class="experience-section" aria-labelledby="form-title">
+        <div class="container">
+            <p class="section-kicker">Cerita baru untuk portofoliomu</p>
+            <h1 id="form-title">Tambah proyek</h1>
+
+            <form method="post"
+                  action="{% url 'main:create_project' %}"
+                  class="project-form">
+                {% csrf_token %}
+
+                {% for error in form.non_field_errors %}
+                    <p class="form-error" role="alert">{{ error }}</p>
+                {% endfor %}
+
+                {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div id="{{ field.auto_id }}_error" class="form-error" role="alert">
+                                {% for error in field.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <div class="social-links">
+                    <button type="submit" class="button">Simpan proyek</button>
+                    <a href="{% url 'main:show_projects' %}" class="button button-secondary">Batal</a>
+                </div>
+            </form>
+        </div>
+    </section>
+</main>
+{% endblock content %}
