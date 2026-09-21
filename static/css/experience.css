@@ -1,0 +1,40 @@
+/* Komponen Experience memakai warna dan tombol dari tema pastel bersama. */
+.experience-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1.25rem;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: #f4edf8;
+}
+.experience-filters .form-group { flex: 1 1 165px; min-width: 0; margin: 0; }
+.experience-filters .experience-filters__query { flex: 2 1 260px; }
+.experience-filters .form-group input,
+.experience-filters .form-group select { box-sizing: border-box; max-width: 100%; }
+.experience-filters__query input { border-radius: 999px; }
+.experience-filters__actions { display: flex; flex-wrap: wrap; gap: .6rem; padding-bottom: 2px; }
+.experience-results { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem 1.5rem; margin-bottom: 1.5rem; }
+.experience-results p { margin: 0; color: var(--text-muted); }
+.experience-results a, .experience-back { color: var(--accent-dark); font-weight: 800; text-underline-offset: 4px; }
+.experience-thumbnail { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border: 1px solid var(--line); border-radius: 15px; margin-bottom: 1.3rem; }
+.experience-card h2, .experience-card .experience-description { overflow-wrap: anywhere; }
+.experience-dot { display: inline-block; width: .5rem; height: .5rem; margin-right: .35rem; border-radius: 50%; background: #527d5b; }
+.experience-empty { grid-column: 1 / -1; padding: 2rem; border: 1px dashed var(--line); border-radius: 22px; text-align: center; }
+.experience-empty h2 { font-size: 1.65rem; }
+.experience-empty .button { margin-top: .8rem; }
+.experience-back { display: inline-block; margin-bottom: 1.5rem; }
+.experience-help { margin: .4rem 0 0; color: var(--text-muted); font-size: .88rem; }
+.experience-form-notice { margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #d99aad; border-radius: 14px; background: #fce7ec; color: #942341; }
+.project-form input[aria-invalid="true"],
+.project-form textarea[aria-invalid="true"],
+.project-form select[aria-invalid="true"] { border-color: #a32646; }
+@media (max-width: 520px) {
+    .experience-filters { padding: 1rem; }
+    .experience-filters .form-group,
+    .experience-filters .experience-filters__query { flex-basis: 100%; }
+    .experience-filters__actions { width: 100%; }
+    .experience-filters__actions .button { flex: 1; }
+}

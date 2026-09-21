@@ -54,4 +54,9 @@ class MainTest(TestCase):
         
         self.assertFalse(self.experience.is_ongoing)
         self.assertContains(response, "Selesai")
-        self.assertNotContains(response, "Sedang berlangsung")
+        html = response.content.decode("utf-8")
+        status_kartu = html.split('<p class="experience-status">', 1)[1].split("</p>", 1)[0]
+
+        self.assertIn("Selesai", status_kartu)
+        self.assertNotIn("Sedang berlangsung", status_kartu)
+        

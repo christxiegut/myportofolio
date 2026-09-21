@@ -1,39 +1,97 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block meta %}
     <title>Experience - {{ name }}</title>
+    <link rel="stylesheet" href="{% static 'css/experience.css' %}">
 {% endblock meta %}
 
 {% block content %}
 <main>
-    <section class="experience-section" id="experience" aria-labelledby="experience-title">
+    <section class="experience-section" aria-labelledby="experience-title">
         <div class="container">
-            <p class="section-kicker">Perjalanan saya sejauh ini</p>
-            <h1 id="experience-title">Experience</h1>
+            <p class="section-kicker">Setiap pengalaman punya cerita</p>
+            <div class="project-header">
+                <h1 id="experience-title">Experience</h1>
+                <a href="{% url 'main:create_experience' %}" class="button project-add-button">
+                    <span aria-hidden="true">+</span> Tambah pengalaman
+                </a>
+            </div>
+
+            <form method="get" action="{% url 'main:show_experience' %}"
+                  class="experience-filters" role="search" aria-label="Cari pengalaman">
+                <div class="form-group experience-filters__query">
+                    <label for="experience-query">Cari pengalaman</label>
+                    <input type="search" id="experience-query" name="q" value="{{ query }}"
+                           placeholder="Cari judul atau deskripsi..." enterkeyhint="search">
+                </div>
+                <div class="form-group">
+                    <label for="experience-category">Kategori</label>
+                    <select id="experience-category" name="category">
+                        <option value="">Semua kategori</option>
+                        {% for value, label in category_choices %}
+                            <option value="{{ value }}"{% if value == selected_category %} selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="experience-status">Status</label>
+                    <select id="experience-status" name="status">
+                        <option value="">Semua status</option>
+                        <option value="ongoing"{% if selected_status == 'ongoing' %} selected{% endif %}>Sedang berlangsung</option>
+                        <option value="completed"{% if selected_status == 'completed' %} selected{% endif %}>Selesai</option>
+                    </select>
+                </div>
+                <div class="experience-filters__actions">
+                    <button type="submit" class="button">Cari</button>
+                    {% if has_filters %}
+                        <a href="{% url 'main:show_experience' %}" class="button button-secondary">Reset</a>
+                    {% endif %}
+                </div>
+            </form>
+
+            <div class="experience-results">
+                <p role="status">
+                    {{ experience_list|length }} pengalaman{% if has_filters %} ditemukan{% endif %}{% if query %} untuk “{{ query }}”{% endif %}.
+                </p>
+                <a href="{% url 'main:get_experiences_json' %}{% if filter_querystring %}?{{ filter_querystring }}{% endif %}">Lihat JSON <span aria-hidden="true">↗</span></a>
+            </div>
 
             <div class="experience-grid">
                 {% for experience in experience_list %}
                     <article class="experience-card">
-                        <span class="experience-category">
-                            {{ experience.get_category_display }}
-                        </span>
-
-                        <h2>{{ experience.title }}</h2>
-
-                        <p class="experience-description">
-                            {{ experience.description }}
-                        </p>
-
-                        {% if experience.is_ongoing %}
-                            <p class="experience-status">Sedang berlangsung</p>
-                        {% else %}
-                            <p class="experience-status">Selesai</p>
+                        {% if experience.thumbnail %}
+                            <img src="{{ experience.thumbnail }}" alt="Gambar untuk {{ experience.title }}"
+                                 class="experience-thumbnail" loading="lazy" referrerpolicy="no-referrer">
                         {% endif %}
+                        <span class="experience-category">{{ experience.get_category_display }}</span>
+                        <h2>{{ experience.title }}</h2>
+                        <p class="experience-description">{{ experience.description|linebreaksbr }}</p>
+                        <p class="experience-status">
+                            {% if experience.is_ongoing %}
+                                <span class="experience-dot" aria-hidden="true"></span> Sedang berlangsung
+                            {% else %}
+                                Selesai · {{ experience.ended_at|date:"d M Y" }}
+                            {% endif %}
+                        </p>
+                        <div class="social-links">
+                            <a href="{% url 'main:update_experience' experience.pk %}" class="button button-secondary"
+                               aria-label="Edit {{ experience.title }}">Edit pengalaman</a>
+                            {% include 'components/experience_delete_modal.html' with experience=experience %}
+                        </div>
                     </article>
                 {% empty %}
-                    <p class="empty-state">
-                        Belum ada pengalaman yang ditambahkan.
-                    </p>
+                    <div class="empty-state experience-empty">
+                        {% if has_filters %}
+                            <h2>Belum ada yang cocok</h2>
+                            <p>Coba kata kunci lain atau tampilkan semua pengalaman.</p>
+                            <a href="{% url 'main:show_experience' %}" class="button button-secondary">Tampilkan semua</a>
+                        {% else %}
+                            <h2>Mulai cerita pertamamu</h2>
+                            <p>Belum ada pengalaman yang ditambahkan.</p>
+                            <a href="{% url 'main:create_experience' %}" class="button">Tambah pengalaman</a>
+                        {% endif %}
+                    </div>
                 {% endfor %}
             </div>
         </div>

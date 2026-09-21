@@ -33,7 +33,7 @@
                 {% with current=request.resolver_match.url_name %}
                 <nav class="main-nav" aria-label="Navigasi utama">
                     <a href="{% url 'main:show_main' %}"{% if current == 'show_main' %} aria-current="page"{% endif %}>Profile</a>
-                    <a href="{% url 'main:show_experience' %}"{% if current == 'show_experience' %} aria-current="page"{% endif %}>Experience</a>
+                    <a href="{% url 'main:show_experience' %}"{% if current == 'show_experience' or current == 'create_experience' or current == 'update_experience' %} aria-current="page"{% endif %}>Experience</a>
                     <a href="{% url 'main:show_projects' %}"{% if current == 'show_projects' or current == 'show_project_detail' or current == 'create_project' %} aria-current="page"{% endif %}>Projects</a>
                 </nav>
                 {% endwith %}
@@ -54,7 +54,7 @@
 
         <footer class="site-footer">
             <div class="container">
-                <p class="footer-note">^-^</p>
+                <p class="footer-note">Belajar, berkarya, bertumbuh.</p>
                 <p>&copy; 2026 {{ name|default:"Angelica Christilia Talumewo" }}. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
             </div>
         </footer>
