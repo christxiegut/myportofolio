@@ -586,3 +586,101 @@ Saat ini teknologi proyek disimpan sebagai teks. Pendekatan ini cukup untuk port
 - [Django: Making queries](https://docs.djangoproject.com/en/5.2/topics/db/queries/)
 - [Django: Shortcut functions](https://docs.djangoproject.com/en/5.2/topics/http/shortcuts/)
 - [Django: Writing and running tests](https://docs.djangoproject.com/en/5.2/topics/testing/overview/)
+
+
+### Tugas 3
+
+Tugas 3 mengembangkan bagian **Experience** pada portofolio Angelica Christilia Talumewo. Data pengalaman dapat ditambah, diperbarui, dihapus, dan diakses dalam JSON. Halaman daftar mengikuti alur model → JSON → deserialisasi → template, sesuai instruksi Form & Data Delivery.
+
+#### 1. Mengapa menggunakan ModelForm dan csrf_token?
+
+`ModelForm` menghubungkan formulir dengan model Django sehingga tipe field, batas panjang, pilihan kategori, dan aturan field wajib dapat mengikuti definisi model. Pada proyek ini, `ExperienceForm` memakai model `Experience`. Kolom judul, deskripsi, kategori, URL gambar, dan waktu selesai didefinisikan secara eksplisit. HTML formulir tetap dapat ditata sendiri, sedangkan validasi dan penyimpanan dibantu Django. Hal ini mengurangi pengulangan aturan antara model dan formulir. [Dokumentasi ModelForm](https://docs.djangoproject.com/en/6.0/topics/forms/modelforms/)
+
+Pada proses tambah, form dibuat dari `request.POST`. Pada proses edit, form juga diberi `instance=experience` agar `save()` memperbarui pengalaman yang dipilih. Tanpa instance, penyimpanan akan membuat objek baru. Data hanya disimpan setelah `form.is_valid()` bernilai benar. Jika tidak valid, formulir ditampilkan kembali beserta kesalahannya dan masukan yang perlu diperbaiki.
+
+`{% csrf_token %}` menambahkan token tersembunyi pada formulir POST. Bersama middleware CSRF, token ini membantu Django menolak permintaan perubahan data yang tidak membawa token yang sesuai. Ini membantu mencegah situs lain memanfaatkan browser pengguna untuk mengirim permintaan yang tidak dikehendaki. Pada PWS, origin HTTPS situs juga didaftarkan dalam `CSRF_TRUSTED_ORIGINS`. Token CSRF tetap dibutuhkan pada form tambah, edit, dan hapus. [Dokumentasi pengaturan CSRF](https://docs.djangoproject.com/en/6.0/ref/settings/#csrf-trusted-origins)
+
+#### 2. Mengapa JSON lebih disukai dibandingkan XML pada aplikasi web modern?
+
+JSON merepresentasikan data sebagai objek, array, string, angka, boolean, dan `null`. Struktur ini mudah diproses di JavaScript menggunakan `JSON.parse()` serta dibuat kembali menggunakan `JSON.stringify()`. Karena antarmuka web banyak menggunakan JavaScript, JSON memudahkan pertukaran data dengan server. [Referensi JSON di MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON)
+
+Untuk data portofolio berupa daftar pengalaman dan atributnya, penulisan JSON biasanya lebih ringkas karena tidak memerlukan tag pembuka dan penutup untuk setiap nilai seperti XML. Pada proyek ini, satu respons dapat memuat daftar pengalaman yang masing-masing memiliki identitas dan field model. XML tetap berguna untuk kebutuhan dokumen, namespace, atau integrasi sistem yang sudah memakai XML; pilihan format bergantung pada kebutuhan aplikasi.
+
+#### 3. Bagaimana alur JSON dan mengapa diperlukan serialization?
+
+Ketika endpoint `/api/experiences/` dibuka, routing menjalankan `get_experiences_json`. Fungsi ini mengambil `QuerySet` dari model `Experience`, menerapkan filter yang dikirim melalui query parameter, lalu memanggil `serializers.serialize("json", queryset)`. Hasilnya dikembalikan melalui `HttpResponse` dengan `content_type="application/json"`.
+
+Objek model dan `QuerySet` merupakan objek Python yang tidak bisa langsung diperlakukan sebagai dokumen JSON oleh browser. Serialization mengubahnya menjadi representasi data yang dapat dikirim melalui HTTP, termasuk mengubah UUID dan nilai waktu ke bentuk yang sesuai untuk JSON. Serializer Django menyertakan informasi `model`, `pk`, dan `fields`, sehingga identitas serta data objek dapat direkonstruksi. [Dokumentasi serialization Django](https://docs.djangoproject.com/en/6.0/topics/serialization/)
+
+Untuk halaman HTML `/experience/`, `show_experience` memanggil fungsi JSON tersebut, membaca isi responsnya, lalu memakai `serializers.deserialize("json", ...)`. Objek hasil deserialisasi dimasukkan ke `experience_list` dan ditampilkan oleh `experience.html`. Pemanggilan fungsi JSON dilakukan di Python, sehingga tidak membuat permintaan HTTP tambahan ke server sendiri. Objek hasil deserialisasi hanya ditampilkan; tidak disimpan ulang ke database.
+
+#### Implementasi dan struktur kode
+
+| Bagian | Implementasi |
+| --- | --- |
+| Model | Menggunakan `Experience` dari Tutorial 2 dengan primary key UUID |
+| ModelForm | `ExperienceForm` pada `main/forms.py`; `ProjectForm` tetap tersedia |
+| Field | `title` (CharField), `description` (TextField), `category` (choices), `thumbnail` (URLField), dan `ended_at` (DateTimeField opsional) |
+| Field otomatis | `id` dan `started_at` dikelola model; tidak diedit melalui formulir |
+| Tambah dan edit | Validasi serta template digunakan bersama; edit memakai `instance` |
+| Hapus | POST dengan token CSRF dan konfirmasi sebelum pengiriman |
+| JSON | `get_experiences_json` menyajikan objek yang sudah diserialisasi |
+| Daftar | `show_experience` mengisi context dari hasil deserialisasi JSON |
+| Tampilan bersama | Halaman penuh memakai `{% extends 'base.html' %}` |
+| Komponen | Konfirmasi hapus merupakan potongan HTML yang dipasang dengan `{% include %}` |
+| Fitur tambahan | Pencarian judul/deskripsi, filter kategori/status, jumlah hasil, reset filter, gambar opsional, notifikasi, dan empty state |
+
+Model tidak diubah pada Tugas 3, sehingga tidak ada migration baru untuk fitur ini. `ended_at` adalah waktu selesai pengalaman yang dapat diisi pengguna; mengosongkannya menandai pengalaman masih berlangsung. `started_at` tetap merupakan waktu pencatatan otomatis sesuai model sebelumnya.
+
+Routing Experience dikelola di `main/urls.py`, sedangkan implementasi view ditempatkan di `main/experience_views.py`. View `show_experience` yang dirujuk routing berasal dari modul baru tersebut. Definisi lama pada `main/views.py`, jika masih ada, tidak lagi menjadi target rute Experience.
+
+| URL | Metode | Fungsi |
+| --- | --- | --- |
+| `/experience/` | GET | Daftar dari JSON yang dideserialisasi |
+| `/experience/add/` | GET, POST | Form tambah dan penyimpanan |
+| `/experience/<uuid>/edit/` | GET, POST | Form edit dan pembaruan |
+| `/experience/<uuid>/delete/` | POST | Hapus pengalaman yang dipilih |
+| `/api/experiences/` | GET | JSON seluruh pengalaman |
+| `/api/experiences/?category=volunteer&status=ongoing` | GET | Contoh filter gabungan |
+| `/api/experiences/?q=vendor` | GET | Contoh pencarian kata kunci |
+
+Filter pada HTML dan JSON menggunakan fungsi yang sama. Tidak ada request HTTP internal untuk menghasilkan daftar. Bagian Projects, termasuk pencarian, detail, form tambah, JSON/XML, dan hapus dari Tutorial 3, tetap digunakan.
+
+#### Setup dan pengujian mingguan
+
+Lanjutkan setup dasar proyek pada bagian README sebelumnya. Dari folder yang berisi `manage.py`, jalankan perintah berikut pada PowerShell Windows:
+
+```powershell
+.\env\Scripts\python.exe manage.py migrate
+.\env\Scripts\python.exe manage.py test
+.\env\Scripts\python.exe manage.py runserver
+```
+
+Perintah tersebut memakai Python dari virtual environment secara langsung. Untuk pemasangan pada lingkungan baru, instal lebih dahulu dependensi proyek yang tercantum dalam `requirements.txt`.
+
+Berkas `main/test_experience_crud.py` memuat 24 tes yang memeriksa antara lain penyimpanan valid, penolakan data tidak valid, pengeditan tanpa duplikasi UUID, data tidak berubah saat validasi gagal, metode hapus, objek tidak ditemukan, data JSON, filter gabungan, escaping, dan CSRF. Tiga belas tes Projects dari Tutorial 3 juga dipakai saat menyiapkan paket ini. Hasil uji paket pada lingkungan terpisah dengan Django 6.1: **37 tes lolos**. Hasil tersebut perlu dilengkapi dengan pengujian seluruh proyek pada lingkungan pemasangan.
+
+Verifikasi manual yang perlu dilakukan setelah pemasangan:
+
+1. Tambah pengalaman percobaan dan pastikan tampil pada daftar.
+2. Edit judul pengalaman itu; pastikan jumlah kartu tidak bertambah.
+3. Coba pencarian, filter kategori, dan filter status.
+4. Buka JSON dan cocokkan judul serta ID dengan pengalaman yang ditambahkan.
+5. Buka konfirmasi hapus lalu pilih Batal; data harus tetap ada.
+6. Hapus pengalaman percobaan melalui tombol konfirmasi; data harus hilang.
+7. Pastikan halaman Profile dan fitur Projects sebelumnya masih dapat digunakan.
+
+PWS memiliki database yang terpisah dari database lokal. Data yang dibuat di laptop tidak otomatis terkirim ketika source code di-push. Data PWS dapat ditambahkan lewat formulir pada website setelah deployment berhasil.
+
+#### Bantuan AI dan evaluasinya
+
+ChatGPT digunakan untuk membaca ketentuan tugas, menyusun rancangan serta draf kode CRUD dan JSON Experience, menyiapkan template dan pengujian, serta menyusun draf dokumentasi dan penjelasan reflektif. Strategi yang digunakan adalah melanjutkan struktur Tutorial 3 dan memakai model serta tema yang sudah ada.
+
+| Permintaan atau arahan | Bantuan yang digunakan |
+| --- | --- |
+| Meminta bantuan Tugas 3 dengan deadline 21 September 2026 pukul 23.59 WIB | Membaca checklist dan rubrik, lalu memetakan kebutuhan pada bagian Experience |
+| Melanjutkan proyek Tutorial 3 yang dibahas sebelumnya | Menyusun ModelForm, routing UUID, view CRUD/JSON, dan template dengan tema pastel |
+| Memeriksa kesesuaian sebelum pemasangan | Menyiapkan tes untuk validasi, pembaruan, penghapusan, filter, dan CSRF |
+| Menyiapkan dokumentasi | Menyusun penjelasan implementasi, petunjuk uji, serta draf tiga jawaban reflektif |
+
+Keterbatasan bantuan AI adalah tidak memiliki akses langsung ke berkas terbaru pada laptop dan konfigurasi server PWS. Karena itu, keberhasilan tes paket di lingkungan terpisah belum membuktikan bahwa seluruh konfigurasi lokal atau deployment sudah benar. Kode juga perlu dipahami, terutama perbedaan form tambah dan edit, arti UUID pada URL, serta alasan POST dan CSRF dipakai untuk perubahan data. Catatan perbaikan manual dan hasil verifikasi lokal perlu ditambahkan berdasarkan pengerjaan yang benar-benar dilakukan.
