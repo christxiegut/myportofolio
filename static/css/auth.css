@@ -1,0 +1,59 @@
+/* Tutorial 4: muat setelah pastel.css. */
+.site-header .header-inner { flex-wrap: wrap; padding-block: 1.2rem; }
+.site-header .main-nav { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; }
+.nav-user {
+    max-width: 24ch;
+    overflow-wrap: anywhere;
+    padding: .5rem .85rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #f5e0ed;
+    color: var(--text);
+    font-weight: 800;
+    font-size: .85rem;
+}
+.nav-logout { display: inline-flex; margin: 0; }
+.nav-logout__button {
+    min-height: 44px;
+    padding: .55rem .9rem;
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    background: var(--paper);
+    color: var(--accent-dark);
+    font: inherit;
+    font-size: .9rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+.nav-logout__button:hover { background: var(--accent-soft); }
+.auth-section { background: linear-gradient(135deg, #f7e2ea, #eee2f6); }
+.auth-card {
+    position: relative;
+    width: min(100%, 590px);
+    margin-inline: auto;
+    padding: clamp(1.4rem, 4vw, 2.5rem);
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    background: var(--paper);
+    box-shadow: 6px 7px 0 #d7c5e2;
+}
+.auth-card h1 { margin-bottom: .8rem; font-size: clamp(2rem, 5vw, 3rem); }
+.auth-spark { display: block; margin-bottom: .7rem; color: var(--accent); font-size: 2rem; }
+.auth-description, .auth-switch { color: var(--text-muted); line-height: 1.7; }
+.auth-form { width: 100%; margin-top: 1.6rem; }
+.auth-form .button { width: 100%; }
+.auth-form .form-help { margin-top: .5rem; color: var(--text-muted); font-size: .85rem; line-height: 1.6; }
+.auth-form .form-help ul { padding-left: 1.25rem; }
+.auth-switch { margin: 1.4rem 0 0; text-align: center; }
+.auth-switch a { font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
+.star-form { display: inline-flex; margin: 0; }
+.button-star { background: var(--paper); color: var(--accent-dark); }
+.button-star.is-starred { background: #f8e7a8; border-color: #8b632a; color: #654418; }
+.button-star:hover { background: #eee2f6; color: var(--accent-dark); }
+.button-star.is-starred:hover { background: #f2d77e; color: #654418; }
+.star-count { min-width: 1.5rem; padding: .1rem .4rem; border-radius: 999px; background: #ffffffa6; color: #513063; font-size: .8rem; }
+@media (max-width: 700px) {
+    .site-header .main-nav { justify-content: center; }
+    .nav-user { max-width: 18ch; }
+    .auth-card { box-shadow: 3px 4px 0 #d7c5e2; }
+}

@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/project-search.css' %}">
     <link rel="stylesheet" href="{% static 'css/pastel.css' %}">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
 
     {% block meta %}
         <title>Portfolio - {{ name|default:"Angelica Christilia Talumewo" }}</title>
@@ -35,6 +36,16 @@
                     <a href="{% url 'main:show_main' %}"{% if current == 'show_main' %} aria-current="page"{% endif %}>Profile</a>
                     <a href="{% url 'main:show_experience' %}"{% if current == 'show_experience' or current == 'create_experience' or current == 'update_experience' %} aria-current="page"{% endif %}>Experience</a>
                     <a href="{% url 'main:show_projects' %}"{% if current == 'show_projects' or current == 'show_project_detail' or current == 'create_project' %} aria-current="page"{% endif %}>Projects</a>
+                    {% if user.is_authenticated %}
+                        <span class="nav-user">{{ user.username }}</span>
+                        <form method="post" action="{% url 'main:logout' %}" class="nav-logout">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-logout__button">Logout</button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'main:login' %}"{% if current == 'login' %} aria-current="page"{% endif %}>Login</a>
+                        <a href="{% url 'main:register' %}"{% if current == 'register' %} aria-current="page"{% endif %}>Register</a>
+                    {% endif %}
                 </nav>
                 {% endwith %}
             </div>

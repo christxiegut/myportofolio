@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block meta %}<title>Login - {{ name }}</title>{% endblock meta %}
+
+{% block content %}
+<main>
+    <section class="experience-section auth-section" aria-labelledby="login-title">
+        <div class="container">
+            <div class="auth-card">
+                <span class="auth-spark" aria-hidden="true">✦</span>
+                <p class="section-kicker">Senang melihatmu lagi</p>
+                <h1 id="login-title">Selamat datang!</h1>
+                <p class="auth-description">Masuk untuk memberi star pada proyek yang kamu suka.</p>
+                <form method="post" action="{% url 'main:login' %}" class="project-form auth-form">
+                    {% csrf_token %}
+                    {% include "components/auth_fields.html" %}
+                    <button type="submit" class="button">Login</button>
+                </form>
+                <p class="auth-switch">Belum punya akun? <a href="{% url 'main:register' %}">Daftar di sini</a>.</p>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock content %}

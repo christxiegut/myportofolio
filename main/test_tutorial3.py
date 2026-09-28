@@ -2,6 +2,7 @@
 
 from xml.etree import ElementTree
 
+from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -11,6 +12,9 @@ from main.models import Project
 class Tutorial3Tests(TestCase):
     @classmethod
     def setUpTestData(cls):
+        cls.owner = get_user_model().objects.create_superuser(
+            username="tutorial3_owner", email="owner@example.com", password=None
+        )
         cls.portfolio = Project.objects.create(
             title="Portofolio Tutorial",
             description="Catatan pembelajaran dan karya pribadi.",
@@ -22,6 +26,10 @@ class Tutorial3Tests(TestCase):
             description="Daftar acara kampus.",
             technologies="HTML, CSS",
         )
+
+    def setUp(self):
+        # Tutorial 4: pengujian form/hapus yang valid harus memakai akun pemilik.
+        self.client.force_login(self.owner)
 
     def project_payload(self, **changes):
         data = {
@@ -143,6 +151,7 @@ class Tutorial3Tests(TestCase):
 
     def test_csrf_rejects_create_and_delete_without_token(self):
         client = Client(enforce_csrf_checks=True)
+        client.force_login(self.owner)
         count = Project.objects.count()
         create_response = client.post(reverse("main:create_project"), self.project_payload())
         delete_response = client.post(reverse("main:delete_project", args=[self.portfolio.pk]))
@@ -152,6 +161,7 @@ class Tutorial3Tests(TestCase):
 
     def test_csrf_token_from_form_allows_create_and_delete(self):
         client = Client(enforce_csrf_checks=True)
+        client.force_login(self.owner)
         client.get(reverse("main:create_project"))
         token = client.cookies["csrftoken"].value
         response = client.post(

@@ -12,6 +12,7 @@ def show_main(request):
             "Mahasiswa jurusan Sistem Informasi Fakultas Ilmu Komputer "
             "Universitas Indonesia yang saat ini berada di semester 3."
             ),
+        "last_login": request.COOKIES.get("last_login", "Belum ada sesi login"),
     }
     return render(request, "index.html", context)
 
