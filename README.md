@@ -684,3 +684,100 @@ ChatGPT digunakan untuk membaca ketentuan tugas, menyusun rancangan serta draf k
 | Menyiapkan dokumentasi | Menyusun penjelasan implementasi, petunjuk uji, serta draf tiga jawaban reflektif |
 
 Keterbatasan bantuan AI adalah tidak memiliki akses langsung ke berkas terbaru pada laptop dan konfigurasi server PWS. Karena itu, keberhasilan tes paket di lingkungan terpisah belum membuktikan bahwa seluruh konfigurasi lokal atau deployment sudah benar. Kode juga perlu dipahami, terutama perbedaan form tambah dan edit, arti UUID pada URL, serta alasan POST dan CSRF dipakai untuk perubahan data. Catatan perbaikan manual dan hasil verifikasi lokal perlu ditambahkan berdasarkan pengerjaan yang benar-benar dilakukan.
+
+### Tugas 4 - Autentikasi, Otorisasi, dan Star Experience
+
+Tugas 4 melanjutkan bagian **Experience** dari Tugas 3. Sistem akun, session, cookie `last_login`, dan Star Projects dari Tutorial 4 tetap digunakan. Halaman daftar/detail Experience dan API JSON dapat dibaca tanpa login. Perubahan Experience mengikuti empat peran berikut.
+
+| Peran | Baca daftar/detail | Star/Unstar | Tambah | Edit | Hapus |
+| --- | --- | --- | --- | --- | --- |
+| Pengunjung tanpa login | Ya | Login dahulu | Login dahulu | Login dahulu | Login dahulu |
+| Pengguna biasa | Ya | Ya | Tidak | Tidak | Tidak |
+| Editor | Ya | Ya | Tidak | Ya | Tidak |
+| Pemilik (`is_superuser=True`) | Ya | Ya | Ya | Ya | Ya |
+
+#### Implementasi
+
+- `main/access.py` menyimpan pemeriksaan keanggotaan Django Group bernama `Editor` dan aturan siapa yang boleh mengedit Experience.
+- `main/experience_views.py` memakai `login_required` untuk aksi yang membutuhkan akun. Akun yang sudah login tetapi tidak berhak mendapatkan HTTP 403 melalui `PermissionDenied`. Pemeriksaan dilakukan sebelum perubahan database.
+- Create/delete hanya diizinkan bagi superuser. Update diizinkan bagi superuser atau anggota grup Editor. Pengaturan grup dilakukan oleh pemilik melalui Django Admin; tidak tersedia pada form registrasi.
+- Template daftar dan detail menampilkan kontrol sesuai peran. Tampilan tombol bukan pengganti pemeriksaan izin di view.
+- `Experience.starred_by` merupakan `ManyToManyField` ke User dengan `related_name="starred_experiences"`. Tabel penghubung bawaan Django menjaga keunikan pasangan Experience-User.
+- `toggle_experience_star` menerima POST dan dilindungi CSRF. Pengguna hanya dapat menambah atau menghapus star miliknya sendiri. ID akun yang dikirim lewat form tidak dipakai untuk menentukan pemberi star.
+- API JSON memakai daftar field publik eksplisit serta `use_natural_foreign_keys=True`. Relasi `starred_by` ditampilkan sebagai username, bukan seluruh objek User. Password, email akun, session, dan flag peran tidak diserialisasi.
+- Alur daftar dari Tugas 3 tetap dipertahankan: QuerySet diserialisasi ke JSON, hasilnya dideserialisasi, lalu objek dikirim ke template tanpa disimpan ulang. Relasi Star diprefetch untuk mengurangi query berulang saat template membaca jumlah/status star.
+
+#### Fitur tambahan
+
+1. Halaman detail Experience yang dapat diakses publik, dengan kontrol aksi sesuai peran.
+2. Filter **Favorit saya** untuk menampilkan pengalaman yang diberi star oleh akun yang sedang login. Filter ini dapat digabungkan dengan pencarian, kategori, dan status.
+3. Star/Unstar mempertahankan halaman detail atau filter yang sedang dibuka. Tujuan redirect diperiksa agar tidak mengarah ke situs luar.
+4. Label peran pada halaman Experience menjelaskan tindakan yang tersedia bagi pengguna.
+5. Tema pastel, konfirmasi hapus, pesan keberhasilan, navigasi keyboard, dan validasi form dari implementasi sebelumnya tetap digunakan.
+
+#### Menjalankan versi ini
+
+Gunakan environment dan dependencies proyek yang sudah tersedia. Dari direktori yang memuat `manage.py` di Windows:
+
+```powershell
+.\env\Scripts\python.exe manage.py makemigrations main
+.\env\Scripts\python.exe manage.py migrate
+.\env\Scripts\python.exe manage.py check
+.\env\Scripts\python.exe manage.py test
+.\env\Scripts\python.exe manage.py runserver
+```
+
+Migrasi baru menambahkan `starred_by` pada Experience. Setelah berkas migrasi ikut di-commit, pengguna yang baru meng-clone repositori cukup menjalankan `migrate`; `makemigrations` diperlukan ketika mengubah model.
+
+Akun pemilik dibuat dengan `python manage.py createsuperuser`. Akun biasa dibuat lewat `/register/`. Untuk mengatur Editor:
+
+1. Login ke `/admin/` dengan akun pemilik.
+2. Pada Groups, buat grup bernama tepat `Editor`.
+3. Pada Users, pilih akun yang akan menjadi editor dan masukkan ke grup `Editor`.
+4. Biarkan `Staff status` dan `Superuser status` akun editor tidak dicentang. Simpan.
+
+Implementasi ini memeriksa nama grup secara langsung, sehingga tidak perlu memberi permission admin tambahan kepada grup Editor. Editor bekerja melalui halaman Experience, bukan melalui dashboard admin.
+
+#### Routing
+
+| URL | Metode | Akses |
+| --- | --- | --- |
+| `/experience/` | GET | Publik; `q`, `category`, `status`, dan `starred=1` untuk filter |
+| `/experience/<uuid>/` | GET | Detail publik |
+| `/experience/add/` | GET, POST | Pemilik |
+| `/experience/<uuid>/edit/` | GET, POST | Pemilik dan Editor |
+| `/experience/<uuid>/delete/` | POST | Pemilik |
+| `/experience/<uuid>/star/` | POST | Semua akun yang sudah login |
+| `/api/experiences/` | GET | Data publik; filter favorit mengikuti akun peminta |
+
+`starred=1` tanpa login menghasilkan daftar kosong. ID Experience tetap UUID; ID Project tetap integer. Relasi Star kedua model memiliki `related_name` yang berbeda.
+
+#### Pengujian
+
+`main/test_experience_access.py` menambahkan **26 tes** untuk matriks akses, penolakan request langsung, pencabutan keanggotaan Editor, kontrol template, Star/Unstar, CSRF, favorit per pengguna, redirect, dan field publik JSON. Tes CRUD dari Tugas 3 tetap dijalankan menggunakan akun pemilik agar sesuai aturan akses yang baru. Tes negatif terpisah memastikan pengguna biasa dan Editor tidak mendapat hak pemilik.
+
+Sebanyak **85 tes lulus pada lingkungan pengujian paket yang terpisah**, mencakup 26 tes Tugas 4 dan 59 tes terdahulu yang tersedia. Hasil ini tidak dianggap sebagai hasil semua tes pada laptop atau PWS. Verifikasi proyek dilakukan dengan `python manage.py test` serta pemeriksaan browser untuk pengunjung, pengguna biasa, Editor, dan pemilik.
+
+Migrasi juga dicoba pada salinan database pengujian yang telah memuat data. Data Experience/Project lama dan Star Project tetap tersimpan ketika tabel Star Experience ditambahkan.
+
+#### Penggunaan AI dan catatan evaluasi
+
+Alat yang digunakan adalah Gemini. Bantuan mencakup pembacaan rubrik, penyusunan draf kode dan tes, penyesuaian dengan struktur proyek sebelumnya, serta draf dokumentasi. Konteks yang diberikan berupa PDF tugas dan percakapan pengerjaan Tutorial 4. Salah satu permintaan yang digunakan:
+
+>   Bertindak sebagai ahli dalam django dan design website dan bimbing saya mengerjakan tugas ini step by step
+
+Ringkasan log bantuan:
+
+| Bagian | Bantuan yang diberikan | Hal yang diperiksa |
+| --- | --- | --- |
+| Pemetaan rubrik | Melanjutkan Experience dari Tugas 3, dengan empat peran | Editor hanya boleh edit; pemilik boleh create/update/delete |
+| Implementasi | Draf helper peran, view, template, relasi Star, dan routing | UUID Experience dan integer Project tetap sesuai model sebelumnya |
+| Pengujian | Draf tes akses dan pembaruan fixture tes CRUD | Request langsung tetap ditolak meskipun melewati tombol di UI |
+| API dan UI tambahan | Username pada JSON, detail, dan Favorit saya | Tidak menyerialisasi objek User lengkap; favorit tidak tertukar antar akun |
+| Dokumentasi | Draf setup, matriks peran, dan panduan pengumpulan | Hasil tes paket dibedakan dari hasil pengujian lingkungan pengguna |
+
+Keterbatasan bantuan AI adalah tidak dapat langsung memastikan kondisi seluruh berkas dan database pada laptop/PWS. Karena itu, penerapan migrasi, pemilihan akun Editor di Django Admin, percobaan browser, dan hasil tes lokal perlu diperiksa pada lingkungan proyek sendiri. Mempercayai tombol yang tersembunyi saja tidak cukup; penolakan request langsung dan perubahan jumlah data ikut diuji. Cookie tampilan `last_login` juga tidak dipakai untuk menentukan peran.
+
+Penyesuaian terhadap kode sebelumnya meliputi pemisahan pemeriksaan akses, penggunaan UUID pada rute Experience, pembaruan tes CRUD agar berjalan sebagai pemilik, serta penggunaan nama relasi Star yang berbeda untuk Experience dan Project. Tidak ada klaim bahwa seluruh proyek diverifikasi hanya karena draf kode berhasil dibuat.
+
+Referensi: instruksi Individual Assignment 4 yang dilampirkan, [autentikasi dan Groups Django](https://docs.djangoproject.com/en/6.1/topics/auth/default/), serta [serialisasi Django](https://docs.djangoproject.com/en/6.0/topics/serialization/).
