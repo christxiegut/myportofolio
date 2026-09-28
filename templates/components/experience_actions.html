@@ -1,0 +1,13 @@
+<div class="social-links">
+    {% if show_detail %}
+        <a href="{% url 'main:show_experience_detail' experience.pk %}" class="button button-secondary">Lihat detail</a>
+    {% endif %}
+    {% include 'components/experience_star.html' with experience=experience %}
+    {% if user.is_superuser or is_editor %}
+        <a href="{% url 'main:update_experience' experience.pk %}" class="button button-secondary"
+           aria-label="Edit {{ experience.title }}">Edit pengalaman</a>
+    {% endif %}
+    {% if user.is_superuser %}
+        {% include 'components/experience_delete_modal.html' with experience=experience %}
+    {% endif %}
+</div>

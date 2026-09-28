@@ -1,0 +1,11 @@
+<p class="experience-role-note">
+    {% if user.is_superuser %}
+        <span class="experience-role-badge">Pemilik</span> Kelola pengalaman dan beri star pada cerita pilihanmu.
+    {% elif is_editor %}
+        <span class="experience-role-badge">Editor</span> Kamu dapat mengedit pengalaman dan memberi star.
+    {% elif user.is_authenticated %}
+        <span class="experience-role-badge">Pengguna</span> Beri star untuk mengumpulkan pengalaman dalam Favorit saya.
+    {% else %}
+        <a href="{% url 'main:login' %}">Login</a> untuk memberi star pada pengalaman yang kamu suka.
+    {% endif %}
+</p>

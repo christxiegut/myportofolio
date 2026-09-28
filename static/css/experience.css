@@ -31,6 +31,16 @@
 .project-form input[aria-invalid="true"],
 .project-form textarea[aria-invalid="true"],
 .project-form select[aria-invalid="true"] { border-color: #a32646; }
+.experience-role-note { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem; margin-bottom: 1.5rem; color: var(--text-muted); line-height: 1.6; }
+.experience-role-note a { color: var(--accent-dark); font-weight: 800; text-underline-offset: 3px; }
+.experience-role-badge { display: inline-block; padding: .25rem .8rem; border: 1px solid var(--line); border-radius: 999px; background: #f5e0ed; color: var(--accent-dark); font-size: .85rem; font-weight: 800; }
+.experience-favorites-control { display: flex; align-items: center; gap: .6rem; min-height: 48px; padding-inline: .4rem; color: var(--text); font-weight: 800; cursor: pointer; }
+.experience-favorites-control input { width: 1.15rem; height: 1.15rem; accent-color: var(--accent); }
+.experience-favorites-control input:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.experience-detail-card { max-width: 850px; margin-inline: auto; }
+.experience-detail-card h1 { margin-top: 1rem; font-size: clamp(1.8rem, 4vw, 3rem); overflow-wrap: anywhere; }
+.experience-detail-card .experience-description { line-height: 1.8; }
+.experience-detail-card .experience-thumbnail { max-height: 420px; object-fit: contain; background: #f4edf8; }
 @media (max-width: 520px) {
     .experience-filters { padding: 1rem; }
     .experience-filters .form-group,

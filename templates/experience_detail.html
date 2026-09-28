@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+    <title>{{ experience.title }} - Experience - {{ name }}</title>
+    <link rel="stylesheet" href="{% static 'css/experience.css' %}">
+{% endblock meta %}
+
+{% block content %}
+<main>
+    <section class="experience-section" aria-labelledby="experience-detail-title">
+        <div class="container">
+            <a href="{% url 'main:show_experience' %}" class="experience-back">← Kembali ke Experience</a>
+            {% include 'components/experience_role.html' %}
+            <article class="experience-card experience-detail-card">
+                {% if experience.thumbnail %}
+                    <img src="{{ experience.thumbnail }}" alt="Gambar untuk {{ experience.title }}"
+                         class="experience-thumbnail" referrerpolicy="no-referrer">
+                {% endif %}
+                <span class="experience-category">{{ experience.get_category_display }}</span>
+                <h1 id="experience-detail-title">{{ experience.title }}</h1>
+                <div class="experience-description">{{ experience.description|linebreaksbr }}</div>
+                <p class="experience-status">
+                    {% if experience.is_ongoing %}
+                        <span class="experience-dot" aria-hidden="true"></span> Sedang berlangsung
+                    {% else %}
+                        Selesai · {{ experience.ended_at|date:"d M Y" }}
+                    {% endif %}
+                </p>
+                {% include 'components/experience_actions.html' with show_detail=False %}
+            </article>
+        </div>
+    </section>
+</main>
+{% endblock content %}

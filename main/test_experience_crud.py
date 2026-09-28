@@ -3,6 +3,7 @@
 import uuid
 from unittest.mock import patch
 
+from django.contrib.auth import get_user_model
 from django.core import serializers
 from django.http import HttpResponse
 from django.test import Client, TestCase
@@ -15,6 +16,9 @@ from main.models import Experience
 class ExperienceCRUDTests(TestCase):
     @classmethod
     def setUpTestData(cls):
+        cls.owner = get_user_model().objects.create_superuser(
+            username="experience_owner", email="owner@example.com", password=None
+        )
         cls.ongoing = Experience.objects.create(
             title="Staff Dana dan Usaha",
             description="Mencari vendor dan menyiapkan promosi.",
@@ -26,6 +30,10 @@ class ExperienceCRUDTests(TestCase):
             category="research",
             ended_at=timezone.now(),
         )
+
+    def setUp(self):
+        # Tugas 4: operasi CRUD yang valid diuji sebagai pemilik.
+        self.client.force_login(self.owner)
 
     def payload(self, **overrides):
         data = {
@@ -215,6 +223,7 @@ class ExperienceCRUDTests(TestCase):
 
     def test_forms_reject_missing_csrf_token(self):
         client = Client(enforce_csrf_checks=True)
+        client.force_login(self.owner)
         for url in (
             reverse("main:create_experience"), self.edit_url(), self.delete_url()
         ):
@@ -226,6 +235,7 @@ class ExperienceCRUDTests(TestCase):
 
     def test_real_csrf_token_allows_create_update_and_delete(self):
         client = Client(enforce_csrf_checks=True)
+        client.force_login(self.owner)
         client.get(reverse("main:create_experience"))
         token = client.cookies["csrftoken"].value
         payload = self.payload(csrfmiddlewaretoken=token)

@@ -13,10 +13,14 @@
             <p class="section-kicker">Setiap pengalaman punya cerita</p>
             <div class="project-header">
                 <h1 id="experience-title">Experience</h1>
-                <a href="{% url 'main:create_experience' %}" class="button project-add-button">
-                    <span aria-hidden="true">+</span> Tambah pengalaman
-                </a>
+                {% if user.is_superuser %}
+                    <a href="{% url 'main:create_experience' %}" class="button project-add-button">
+                        <span aria-hidden="true">+</span> Tambah pengalaman
+                    </a>
+                {% endif %}
             </div>
+
+            {% include 'components/experience_role.html' %}
 
             <form method="get" action="{% url 'main:show_experience' %}"
                   class="experience-filters" role="search" aria-label="Cari pengalaman">
@@ -42,6 +46,12 @@
                         <option value="completed"{% if selected_status == 'completed' %} selected{% endif %}>Selesai</option>
                     </select>
                 </div>
+                {% if user.is_authenticated %}
+                    <label class="experience-favorites-control" for="experience-starred">
+                        <input type="checkbox" id="experience-starred" name="starred" value="1"{% if starred_only %} checked{% endif %}>
+                        <span>Favorit saya</span>
+                    </label>
+                {% endif %}
                 <div class="experience-filters__actions">
                     <button type="submit" class="button">Cari</button>
                     {% if has_filters %}
@@ -74,11 +84,7 @@
                                 Selesai · {{ experience.ended_at|date:"d M Y" }}
                             {% endif %}
                         </p>
-                        <div class="social-links">
-                            <a href="{% url 'main:update_experience' experience.pk %}" class="button button-secondary"
-                               aria-label="Edit {{ experience.title }}">Edit pengalaman</a>
-                            {% include 'components/experience_delete_modal.html' with experience=experience %}
-                        </div>
+                        {% include 'components/experience_actions.html' with show_detail=True %}
                     </article>
                 {% empty %}
                     <div class="empty-state experience-empty">
@@ -87,9 +93,11 @@
                             <p>Coba kata kunci lain atau tampilkan semua pengalaman.</p>
                             <a href="{% url 'main:show_experience' %}" class="button button-secondary">Tampilkan semua</a>
                         {% else %}
-                            <h2>Mulai cerita pertamamu</h2>
+                            <h2>{% if user.is_superuser %}Mulai cerita pertamamu{% else %}Cerita akan hadir di sini{% endif %}</h2>
                             <p>Belum ada pengalaman yang ditambahkan.</p>
-                            <a href="{% url 'main:create_experience' %}" class="button">Tambah pengalaman</a>
+                            {% if user.is_superuser %}
+                                <a href="{% url 'main:create_experience' %}" class="button">Tambah pengalaman</a>
+                            {% endif %}
                         {% endif %}
                     </div>
                 {% endfor %}
