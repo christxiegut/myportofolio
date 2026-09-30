@@ -10,11 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Urutan penting: tema pastel dibaca setelah CSS sebelumnya. -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="stylesheet" href="{% static 'css/project-search.css' %}">
-    <link rel="stylesheet" href="{% static 'css/pastel.css' %}">
-    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=t5-utuh-20260930">
 
     {% block meta %}
         <title>Portfolio - {{ name|default:"Angelica Christilia Talumewo" }}</title>
@@ -70,5 +66,7 @@
             </div>
         </footer>
     </div>
+    {% include 'components/toast.html' %}
+    {% block scripts %}{% endblock scripts %}
 </body>
 </html>

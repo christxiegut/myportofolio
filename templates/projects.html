@@ -1,122 +1,69 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block meta %}
     <title>Projects - {{ name }}</title>
 {% endblock meta %}
 
 {% block content %}
-<main>
-    <section class="experience-section">
+<main id="projects-app"
+      data-projects-url="{% url 'main:get_projects_json' %}"
+      data-create-url="{% url 'main:create_project_ajax' %}"
+      data-is-superuser="{{ user.is_superuser|yesno:'true,false' }}"
+      data-csrf-token="{{ csrf_token }}">
+    <section class="experience-section" aria-labelledby="projects-title">
         <div class="container">
             <p class="section-kicker">Karya yang saya kembangkan</p>
             <div class="project-header">
-                <h1>Projects</h1>
+                <h1 id="projects-title">Projects</h1>
                 {% if user.is_superuser %}
-                    <a href="{% url 'main:create_project' %}" class="button project-add-button">
+                    <button type="button" class="button project-add-button"
+                            popovertarget="add-project-modal">
                         <span aria-hidden="true">+</span> Tambah proyek
-                    </a>
+                    </button>
                 {% endif %}
             </div>
-
-            <form method="get"
+            <p class="project-intro">Jelajahi proyek, teknologi, dan cerita di balik setiap karya.</p>
+            <form id="project-search-form" method="get"
                   action="{% url 'main:show_projects' %}"
-                  class="project-search project-search--pill"
-                  role="search">
-                <label for="project-query" class="project-search__label">
-                    Cari proyek
-                </label>
-
+                  class="project-search project-search--pill" role="search">
+                <label for="project-query" class="project-search__label">Cari proyek</label>
                 <div class="project-search__bar">
-                    <button type="submit"
-                            class="project-search__submit"
-                            aria-label="Cari proyek"
-                            title="Cari proyek">
-                        <svg viewBox="0 0 24 24" fill="none"
-                             stroke="currentColor" stroke-width="1.8"
+                    <button type="submit" class="project-search__submit" aria-label="Cari proyek" title="Cari proyek">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                              stroke-linecap="round" aria-hidden="true">
                             <circle cx="10.5" cy="10.5" r="6.5"></circle>
                             <path d="M16 16l4.5 4.5"></path>
                         </svg>
                     </button>
-
-                    <input type="search"
-                           id="project-query"
-                           name="q"
-                           value="{{ query }}"
-                           class="project-search__input"
-                           placeholder="Cari proyek atau teknologi..."
+                    <input type="search" id="project-query" name="q" value="{{ query }}"
+                           class="project-search__input" placeholder="Cari proyek atau teknologi..."
                            enterkeyhint="search">
-
-                    {% if query %}
-                        <a href="{% url 'main:show_projects' %}"
-                           class="project-search__clear"
-                           aria-label="Hapus pencarian dan tampilkan semua proyek"
-                           title="Tampilkan semua proyek">
-                            <svg viewBox="0 0 24 24" fill="none"
-                                 stroke="currentColor" stroke-width="1.8"
-                                 stroke-linecap="round" aria-hidden="true">
-                                <path d="M6 6l12 12M18 6L6 18"></path>
-                            </svg>
-                        </a>
-                    {% else %}
-                        <span class="project-search__hint" aria-hidden="true">
-                            Enter ↵
-                        </span>
-                    {% endif %}
+                    <button type="button" id="clear-search" class="project-search__clear"
+                            aria-label="Hapus pencarian" title="Tampilkan semua proyek" hidden>&times;</button>
+                    <span id="search-hint" class="project-search__hint" aria-hidden="true">Enter ↵</span>
                 </div>
             </form>
-
-            {% if query %}
-                <p class="search-summary">
-                    {{ project_list|length }} proyek ditemukan untuk “{{ query }}”.
-                </p>
-            {% endif %}
-
-            <div class="experience-grid">
-                {% for project in project_list %}
-                    <article class="experience-card">
-                        <span class="experience-category">
-                            {{ project.technologies }}
-                        </span>
-
-                        <h2>{{ project.title }}</h2>
-
-                        <p class="experience-description">
-                            {{ project.description }}
-                        </p>
-
-                        <div class="social-links">
-                            <a href="{% url 'main:show_project_detail' project.pk %}"
-                               class="social-link">
-                                Lihat detail
-                            </a>
-
-                            {% if project.repository_url %}
-                                <a href="{{ project.repository_url }}"
-                                   class="social-link"
-                                   target="_blank"
-                                   rel="noopener noreferrer">
-                                    Lihat repositori
-                                </a>
-                            {% endif %}
-
-                            {% include 'components/project_star.html' with project=project %}
-                            {% if user.is_superuser %}
-                                {% include 'components/project_delete_modal.html' with project=project %}
-                            {% endif %}
-                        </div>
-                    </article>
-                {% empty %}
-                    <p class="empty-state">
-                        {% if query %}
-                            Tidak ada proyek yang cocok dengan pencarianmu.
-                        {% else %}
-                            Belum ada proyek yang ditambahkan.
-                        {% endif %}
-                    </p>
-                {% endfor %}
+            <div class="project-list-tools">
+                <p id="search-summary" class="search-summary" role="status" aria-live="polite"></p>
+                <button type="button" id="test-toast" class="button button-secondary">Coba notifikasi</button>
             </div>
+            <noscript><p class="empty-state">Aktifkan JavaScript untuk memuat dan mencari proyek.</p></noscript>
+            <div id="loading" class="empty-state hide" role="status"><p>Memuat proyek...</p></div>
+            <div id="error" class="empty-state hide" role="alert">
+                <p>Gagal memuat proyek. Periksa koneksi, lalu coba lagi.</p>
+                <button type="button" id="retry-projects" class="button button-secondary">Coba lagi</button>
+            </div>
+            <div id="empty" class="empty-state hide"><p>Belum ada proyek yang ditambahkan atau cocok dengan pencarianmu.</p></div>
+            <div id="grid" class="experience-grid project-grid hide" aria-busy="false"></div>
         </div>
     </section>
 </main>
+{% if user.is_superuser %}
+    {% include 'components/project_form_modal.html' %}
+{% endif %}
 {% endblock content %}
+
+{% block scripts %}
+    <script src="{% static 'js/projects.js' %}?v=t5-utuh-20260930" defer></script>
+{% endblock scripts %}

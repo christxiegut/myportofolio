@@ -1,3 +1,7 @@
+from urllib.parse import urlsplit
+
+from django.core.exceptions import ValidationError
+from django.utils.html import strip_tags
 from django.forms import DateTimeInput, ModelForm, Textarea, TextInput, URLInput
 
 from main.models import Experience, Project
@@ -25,6 +29,28 @@ class ProjectForm(ModelForm):
                 attrs={"placeholder": "https://github.com/christxiegut/myportofolio"}
             ),
         }
+
+
+    def _clean_text(self, field_name):
+        value = strip_tags(self.cleaned_data[field_name]).strip()
+        if not value:
+            raise ValidationError("Isian tidak boleh kosong atau hanya berisi tag HTML.")
+        return value
+
+    def clean_title(self):
+        return self._clean_text("title")
+
+    def clean_description(self):
+        return self._clean_text("description")
+
+    def clean_technologies(self):
+        return self._clean_text("technologies")
+
+    def clean_repository_url(self):
+        value = self.cleaned_data["repository_url"]
+        if value and urlsplit(value).scheme.lower() not in {"http", "https"}:
+            raise ValidationError("Gunakan URL repositori dengan http atau https.")
+        return value
 
 
 class ExperienceForm(ModelForm):

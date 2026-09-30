@@ -185,10 +185,11 @@ class Tutorial4Tests(TestCase):
                     self.client.force_login(account)
                 response = self.client.get(reverse("main:show_projects"))
                 assertion = self.assertContains if visible else self.assertNotContains
-                assertion(response, reverse("main:create_project"))
-                assertion(response, reverse("main:delete_project", args=[self.project.pk]))
-                self.assertContains(response, self.star_url())
-                self.assertContains(response, reverse("main:show_project_detail", args=[self.project.pk]))
+                assertion(response, 'id="project-form"')
+                data = self.client.get(reverse("main:get_projects_json")).json()[0]
+                self.assertEqual(bool(data["urls"]["delete"]), visible)
+                self.assertEqual(data["urls"]["star"], self.star_url())
+                self.assertEqual(data["urls"]["detail"], reverse("main:show_project_detail", args=[self.project.pk]))
 
     def test_registered_users_can_star_independently_and_unstar_their_own_vote(self):
         self.client.force_login(self.visitor)
@@ -221,16 +222,18 @@ class Tutorial4Tests(TestCase):
         self.assertNotIn("email", fields)
         self.assertNotContains(response, self.visitor.password)
 
-    def test_html_keeps_star_state_after_json_deserialization(self):
+    def test_json_keeps_star_state_for_ajax_rendering(self):
+        # Tutorial 5 memindahkan data kartu dan status star ke respons JSON.
         self.project.starred_by.add(self.visitor)
         self.client.force_login(self.visitor)
         count = Project.objects.count()
         response = self.client.get(reverse("main:show_projects"), {"q": "DJANGO"})
-        self.assertEqual(len(response.context["project_list"]), 1)
-        self.assertContains(response, "Unstar")
-        self.assertContains(response, 'aria-pressed="true"')
-        self.assertContains(response, '<span class="star-count">1</span>', html=True)
-        self.assertContains(response, f"Dibintangi oleh {self.visitor.username}")
+        self.assertContains(response, 'id="grid"')
+        rows = self.client.get(reverse("main:get_projects_json"), {"q": "DJANGO"}).json()
+        self.assertEqual(len(rows), 1)
+        self.assertTrue(rows[0]["fields"]["is_starred"])
+        self.assertEqual(rows[0]["fields"]["star_count"], 1)
+        self.assertEqual(rows[0]["fields"]["starred_by_names"], self.visitor.username)
         self.assertEqual(Project.objects.count(), count)
         self.assertEqual(self.project.starred_by.count(), 1)
 

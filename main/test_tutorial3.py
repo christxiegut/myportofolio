@@ -61,7 +61,8 @@ class Tutorial3Tests(TestCase):
         self.assertEqual(created.repository_url, "")
         self.assertEqual(created.technologies, "Python")
         self.assertContains(response, "Proyek baru berhasil ditambahkan!")
-        self.assertContains(response, created.title)
+        data = self.client.get(reverse("main:get_projects_json")).json()
+        self.assertIn(created.title, [row["fields"]["title"] for row in data])
 
     def test_empty_post_shows_errors_and_does_not_create_project(self):
         count = Project.objects.count()
@@ -119,15 +120,16 @@ class Tutorial3Tests(TestCase):
         self.assertEqual(objects[0].attrib["pk"], str(self.portfolio.pk))
         self.assertEqual(objects[0].find("field[@name='title']").text, self.portfolio.title)
 
-    def test_search_page_keeps_detail_link_and_delete_confirmation(self):
+    def test_search_page_and_api_keep_detail_and_delete_urls(self):
+        # Tutorial 5: kartu dibuat browser setelah mengambil JSON.
         response = self.client.get(reverse("main:show_projects"), {"q": "  DJANGO  "})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["query"], "DJANGO")
-        self.assertContains(response, self.portfolio.title)
-        self.assertNotContains(response, self.other.title)
-        self.assertContains(response, reverse("main:show_project_detail", args=[self.portfolio.pk]))
-        self.assertContains(response, reverse("main:delete_project", args=[self.portfolio.pk]))
-        self.assertContains(response, f'popovertarget="delete-project-{self.portfolio.pk}"')
+        self.assertContains(response, 'id="grid"')
+        data = self.client.get(reverse("main:get_projects_json"), {"q": "DJANGO"}).json()
+        self.assertEqual([row["pk"] for row in data], [self.portfolio.pk])
+        self.assertEqual(data[0]["urls"]["detail"], reverse("main:show_project_detail", args=[self.portfolio.pk]))
+        self.assertEqual(data[0]["urls"]["delete"], reverse("main:delete_project", args=[self.portfolio.pk]))
 
     def test_get_cannot_delete_a_project(self):
         response = self.client.get(reverse("main:delete_project", args=[self.portfolio.pk]))
